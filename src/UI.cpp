@@ -55,6 +55,16 @@ bool UI::update() {
   return QUIT;
 }
 
+void UI::render(SDL_Renderer *Renderer) {
+  ImGuiIO &io = ImGui::GetIO();
+  ImGui::Render();
+  SDL_RenderSetScale(Renderer, io.DisplayFramebufferScale.x,
+                     io.DisplayFramebufferScale.y);
+  SDL_SetRenderDrawColor(Renderer, 55, 55, 55, 255);
+  SDL_RenderClear(Renderer);
+  ImGui_ImplSDLRenderer2_RenderDrawData(ImGui::GetDrawData());
+}
+
 void UI::close() {
 
   ImGui_ImplSDLRenderer2_Shutdown();
