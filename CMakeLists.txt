@@ -9,6 +9,8 @@ find_package(SDL2 REQUIRED)
 set(SOURCES
     src/main.cpp
     src/App.cpp
+    src/SDLstuff.cpp
+    src/UI.cpp
     libs/imgui/imgui.cpp
     libs/imgui/imgui_demo.cpp
     libs/imgui/imgui_draw.cpp
