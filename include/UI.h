@@ -15,4 +15,6 @@ public:
 
 private:
   bool showDemoWindow = true;
+
+  int radius = 3;
 };

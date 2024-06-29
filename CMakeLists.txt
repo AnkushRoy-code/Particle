@@ -11,6 +11,8 @@ set(SOURCES
     src/App.cpp
     src/SDLstuff.cpp
     src/UI.cpp
+    src/particle.cpp
+    src/simulation.cpp
     libs/imgui/imgui.cpp
     libs/imgui/imgui_demo.cpp
     libs/imgui/imgui_draw.cpp

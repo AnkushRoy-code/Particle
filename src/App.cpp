@@ -1,7 +1,7 @@
 #include "App.h"
 
 #include <SDL.h>
-#include <SDL_render.h>
+#include <SDL_timer.h>
 #include <iostream>
 
 #include "imgui.h"
@@ -12,6 +12,7 @@ bool App::initialize() {
   sdlStuff.initialise(window, renderer);
   ui.initialize(window, renderer);
 
+  simulation.initialize(150);
   return true;
 }
 
@@ -20,6 +21,10 @@ bool trisetn = true;
 void App::update() {
   quit = ui.update();
   ui.render(renderer);
+
+  simulation.update();
+  // other things go here
+  simulation.render(renderer);
 }
 
 void App::render() { SDL_RenderPresent(renderer); }
@@ -51,6 +56,8 @@ int App::RunEngine(App engine) {
 
     engine.update();
     engine.render();
+
+    SDL_Delay(10);
   }
 
   engine.close();

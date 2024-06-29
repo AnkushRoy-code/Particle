@@ -33,7 +33,8 @@ bool UI::update() {
     ImGui::SetNextWindowSize(ImVec2(360, 720), ImGuiCond_Once);
 
     ImGui::Begin("Control Panel", NULL,
-                 ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove);
+                 ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove |
+                     ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoDocking);
 
     if (ImGui::Button("Quit?")) {
       QUIT = true;
@@ -42,6 +43,8 @@ bool UI::update() {
     if (ImGui::Button("Quit Demo?")) {
       showDemoWindow = !showDemoWindow;
     }
+
+    ImGui::SliderInt("Radius", &radius, 1, 10);
 
     ImGui::End();
   }
@@ -72,3 +75,4 @@ void UI::close() {
 
   ImGui::DestroyContext();
 }
+int UI::getRadius() { return radius; }
