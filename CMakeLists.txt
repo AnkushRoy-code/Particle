@@ -9,6 +9,9 @@ find_package(SDL2 REQUIRED)
 set(SOURCES
     src/main.cpp
     src/App.cpp
+    src/SDLstuff.cpp
+    src/UI.cpp
+    src/particle.cpp
     libs/imgui/imgui.cpp
     libs/imgui/imgui_demo.cpp
     libs/imgui/imgui_draw.cpp
@@ -20,4 +23,4 @@ set(SOURCES
 
 add_executable(particle ${SOURCES})
 target_link_libraries(particle SDL2::SDL2 SDL2::SDL2main)
-target_compile_options(particle PRIVATE -Wall -Wextra -pedantic)
+target_compile_options(particle PRIVATE -Wall -O3 -ffast-math -Wextra -pedantic)
