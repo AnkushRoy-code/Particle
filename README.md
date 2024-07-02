@@ -1,8 +1,48 @@
-# Particle
-This is an implementation of Particle life simulation using C++,SDL2 and Dear ImGui.
+# Particle Life Simulation
 
-compiling this project:
-install sdl2 and cmake and gcc (or clangd) 
-make a build dir, do run this command : cmake ..
-and then make
-then you can run the programme with ./particle :)
+![Particle Life Simulation](path/to/screenshot.png)
+
+An engaging implementation of the Particle Life simulation using C++, SDL2, and Dear ImGui. Watch as particles interact and form complex patterns based on simple rules!
+
+## Features
+
+- Real-time particle simulation
+- Customizable particle properties
+- Interactive UI with Dear ImGui
+- Cross-platform compatibility (Windows, macOS, Linux)
+
+## Prerequisites
+
+Before you begin, ensure you have the following installed:
+
+- C++ compiler (GCC, Clang, or MSVC)
+- CMake (version 3.10 or higher)
+- SDL2 library
+- Git (optional, for cloning the repository)
+
+## Building the Project
+
+Before building make sure you have the prerequisites downloaded.
+
+Clone the repository:
+```git clone https://github.com/AnkushRoy-code/Particle.git```
+and then
+```cd Particle```
+
+Create a build directory and navigate to it:
+```mkdir build && cd build```
+
+Generate the build files:
+```cmake ..```
+
+Build the project:
+```cmake --build . ```
+Or in Unix systems you can also do:
+```make``` if the prior doesn't work.
+
+
+## Running the Simulation
+After building, you can run the simulation:
+
+On Windows: ```.\particle.exe```
+On macOS/Linux: ```./particle```
