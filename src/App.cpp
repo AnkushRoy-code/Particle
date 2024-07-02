@@ -1,66 +1,103 @@
 #include "App.h"
+#include "SDLstuff.h"
+#include "UI.h"
 
 #include <SDL.h>
-#include <SDL_timer.h>
 #include <iostream>
 
-#include "imgui.h"
 #include "imgui_impl_sdl2.h"
-#include "imgui_impl_sdlrenderer2.h"
 
 bool App::initialize() {
-  sdlStuff.initialise(window, renderer);
-  ui.initialize(window, renderer);
 
-  simulation.initialize(150);
+  sdlStuff.initialise(window, renderer);
+
+  if (window == nullptr) {
+    std::cerr << "Window could not be created! SDL Error: " << SDL_GetError()
+              << std::endl;
+    return false;
+  }
+
+  if (renderer == nullptr) {
+    std::cerr << "Renderer could not be created! SDL Error: " << SDL_GetError()
+              << std::endl;
+    return false;
+  }
+
+  ui.initialize(window, renderer);
+  // IDK how to check if imgui was successfully initialised.
   return true;
 }
 
-bool trisetn = true;
+// These are for deltaTime
+Uint64 currentTick = SDL_GetPerformanceFrequency();
+Uint64 lastTick = 0;
+double deltaTime = 0;
+
+// These are for capping fps because my monitor doesn't even support more
+// than 60.
+const int FPS = 60;
+const int frameDelay = 1000 / FPS;
+Uint32 frameStart;
+int frameTime;
+
+void calcDeltatime() {
+  lastTick = currentTick;
+  currentTick = SDL_GetPerformanceCounter();
+  deltaTime = (double)((currentTick - lastTick) * 1000 /
+                       (double)SDL_GetPerformanceFrequency());
+}
 
 void App::update() {
-  quit = ui.update();
-  ui.render(renderer);
+  quit = ui.setup();
+  ui.update(renderer, deltaTime);
 
-  simulation.update();
   // other things go here
-  simulation.render(renderer);
 }
 
 void App::render() { SDL_RenderPresent(renderer); }
 
 void App::close() {
-  ImGui_ImplSDLRenderer2_Shutdown();
-  ImGui_ImplSDL2_Shutdown();
-  ImGui::DestroyContext();
-
-  SDL_DestroyRenderer(renderer);
-  SDL_DestroyWindow(window);
-  SDL_Quit();
+  ui.close();
+  sdlStuff.close(window, renderer);
 }
 
-int App::RunEngine(App engine) {
-  if (!engine.initialize()) {
+int App::RunEngine(App Engine) {
+  if (!Engine.initialize()) {
     std::cerr << "Failed to initialize!" << std::endl;
     return 1;
   }
+
   SDL_Event event;
 
-  while (!engine.quit) {
+  while (!Engine.quit) {
+    frameStart = SDL_GetTicks();
+    calcDeltatime();
+
     while (SDL_PollEvent(&event) != 0) {
       ImGui_ImplSDL2_ProcessEvent(&event);
       if (event.type == SDL_QUIT) {
-        engine.quit = true;
+        Engine.quit = true;
       }
     }
 
-    engine.update();
-    engine.render();
+    Engine.update();
 
-    SDL_Delay(10);
+    Engine.render();
   }
 
-  engine.close();
+  frameTime = SDL_GetTicks() - frameStart;
+  if (frameDelay > frameTime) {
+    SDL_Delay(frameDelay - frameTime);
+  }
+
+  Engine.close();
+
+  if (Engine.window != nullptr) {
+    std::cout << "wtf W";
+  }
+  if (Engine.renderer != nullptr) {
+    std::cout << "wtf R";
+  }
 
   return 0;
 }
