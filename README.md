@@ -1,7 +1,5 @@
 # Particle Life Simulation
 
-![Particle Life Simulation](path/to/screenshot.png)
-
 An engaging implementation of the Particle Life simulation using C++, SDL2, and Dear ImGui. Watch as particles interact and form complex patterns based on simple rules!
 
 ## Features
@@ -36,9 +34,7 @@ Generate the build files:
 ```cmake ..```
 
 Build the project:
-```cmake --build . ```
-Or in Unix systems you can also do:
-```make``` if the prior doesn't work.
+```make```
 
 
 ## Running the Simulation
