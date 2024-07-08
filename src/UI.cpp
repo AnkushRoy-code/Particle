@@ -1,10 +1,11 @@
 #include "UI.h"
-#include "color.h"
 #include "imgui.h"
 #include "imgui_impl_sdl2.h"
 #include "imgui_impl_sdlrenderer2.h"
 #include <SDL.h>
 #include <ctime>
+#include <iomanip>
+#include <iostream>
 #include <random>
 
 void UI::initialize(SDL_Window *window, SDL_Renderer *renderer) {
@@ -110,149 +111,18 @@ bool UI::setup() {
     }
     ImGui::SameLine();
     if (ImGui::Button("Default Force")) {
-      defaultForce();
+      setDefaultForce();
     }
-    if (ImGui::TreeNode("Red")) {
-      ImGui::SliderFloat("R x R", &Force[RED][RED], -1, 1, 0, guiWidgetFlags);
-
-      checkBool(RED, GREEN, "R x G");
-      checkBool(RED, BLUE, "R x B");
-      checkBool(RED, WHITE, "R x W");
-      checkBool(RED, YELLOW, "R x Y");
-      checkBool(RED, PURPLE, "R x P");
-      checkBool(RED, CYAN, "R x C");
-      checkBool(RED, MAGENTA, "R x M");
-
-      ImGui::TreePop();
-      ImGui::Spacing();
+    ImGui::Separator();
+    if (ImGui::Button("Log To File")) {
+      ImGui::LogToFile(2, "data.txt");
     }
-
-    if (numOfParticleColor >= GREEN + 1) {
-      if (ImGui::TreeNode("Green")) {
-        ImGui::SliderFloat("G x R", &Force[GREEN][RED], -1, 1, 0,
-                           guiWidgetFlags);
-
-        checkBool(GREEN, GREEN, "G x G");
-        checkBool(GREEN, BLUE, "G x B");
-        checkBool(GREEN, WHITE, "G x W");
-        checkBool(GREEN, YELLOW, "G x Y");
-        checkBool(GREEN, PURPLE, "G x P");
-        checkBool(GREEN, CYAN, "G x C");
-        checkBool(GREEN, MAGENTA, "G x M");
-
-        ImGui::TreePop();
-        ImGui::Spacing();
-      }
-    }
-
-    if (numOfParticleColor >= BLUE + 1) {
-      if (ImGui::TreeNode("Blue")) {
-        ImGui::SliderFloat("B x R", &Force[BLUE][RED], -1, 1, 0,
-                           guiWidgetFlags);
-
-        checkBool(BLUE, GREEN, "B x G");
-        checkBool(BLUE, BLUE, "B x B");
-        checkBool(BLUE, WHITE, "B x W");
-        checkBool(BLUE, YELLOW, "B x Y");
-        checkBool(BLUE, PURPLE, "B x P");
-        checkBool(BLUE, CYAN, "B x C");
-        checkBool(BLUE, MAGENTA, "B x M");
-
-        ImGui::TreePop();
-        ImGui::Spacing();
-      }
-    }
-
-    if (numOfParticleColor >= WHITE + 1) {
-      if (ImGui::TreeNode("White")) {
-        ImGui::SliderFloat("W x R", &Force[WHITE][RED], -1, 1, 0,
-                           guiWidgetFlags);
-
-        checkBool(WHITE, GREEN, "W x G");
-        checkBool(WHITE, BLUE, "W x B");
-        checkBool(WHITE, WHITE, "W x W");
-        checkBool(WHITE, YELLOW, "W x Y");
-        checkBool(WHITE, PURPLE, "W x P");
-        checkBool(WHITE, CYAN, "W x C");
-        checkBool(WHITE, MAGENTA, "W x M");
-
-        ImGui::TreePop();
-        ImGui::Spacing();
-      }
-    }
-
-    if (numOfParticleColor >= YELLOW + 1) {
-      if (ImGui::TreeNode("Yellow")) {
-        ImGui::SliderFloat("G x R", &Force[YELLOW][RED], -1, 1, 0,
-                           guiWidgetFlags);
-
-        checkBool(YELLOW, GREEN, "Y x G");
-        checkBool(YELLOW, BLUE, "Y x B");
-        checkBool(YELLOW, WHITE, "Y x W");
-        checkBool(YELLOW, YELLOW, "Y x Y");
-        checkBool(YELLOW, PURPLE, "Y x P");
-        checkBool(YELLOW, CYAN, "Y x C");
-        checkBool(YELLOW, MAGENTA, "Y x M");
-
-        ImGui::TreePop();
-        ImGui::Spacing();
-      }
-    }
-
-    if (numOfParticleColor >= PURPLE + 1) {
-      if (ImGui::TreeNode("Purple")) {
-        ImGui::SliderFloat("P x R", &Force[PURPLE][RED], -1, 1, 0,
-                           guiWidgetFlags);
-
-        checkBool(PURPLE, GREEN, "P x G");
-        checkBool(PURPLE, BLUE, "P x B");
-        checkBool(PURPLE, WHITE, "P x W");
-        checkBool(PURPLE, YELLOW, "P x Y");
-        checkBool(PURPLE, PURPLE, "P x P");
-        checkBool(PURPLE, CYAN, "P x C");
-        checkBool(PURPLE, MAGENTA, "P x M");
-
-        ImGui::TreePop();
-        ImGui::Spacing();
-      }
-    }
-
-    if (numOfParticleColor >= CYAN + 1) {
-      if (ImGui::TreeNode("Cyan")) {
-        ImGui::SliderFloat("C x R", &Force[CYAN][RED], -1, 1, 0,
-                           guiWidgetFlags);
-
-        checkBool(CYAN, GREEN, "C x G");
-        checkBool(CYAN, BLUE, "C x B");
-        checkBool(CYAN, WHITE, "C x W");
-        checkBool(CYAN, YELLOW, "C x Y");
-        checkBool(CYAN, PURPLE, "C x P");
-        checkBool(CYAN, CYAN, "C x C");
-        checkBool(CYAN, MAGENTA, "C x M");
-
-        ImGui::TreePop();
-        ImGui::Spacing();
-      }
-    }
-
-    if (numOfParticleColor >= MAGENTA + 1) {
-      if (ImGui::TreeNode("Magenta")) {
-        ImGui::SliderFloat("M x R", &Force[MAGENTA][RED], -1, 1, 0,
-                           guiWidgetFlags);
-
-        checkBool(MAGENTA, GREEN, "M x G");
-        checkBool(MAGENTA, BLUE, "M x B");
-        checkBool(MAGENTA, WHITE, "M x W");
-        checkBool(MAGENTA, YELLOW, "M x Y");
-        checkBool(MAGENTA, PURPLE, "M x P");
-        checkBool(MAGENTA, CYAN, "M x C");
-        checkBool(MAGENTA, MAGENTA, "M x M");
-
-        ImGui::TreePop();
-        ImGui::Spacing();
-      }
-    }
+    showColorSliders();
+    ImGui::LogFinish();
     ImGui::End();
+  }
+  if (showDemoWindow) {
+    ImGui::ShowDemoWindow(&showDemoWindow);
   }
   return QUIT;
 }
@@ -285,10 +155,10 @@ UI::UI(int Width, int Height) : width(Width), height(Height) {
 }
 
 void UI::populateRandomForce() {
+  printForce();
   std::random_device rd;
   std::mt19937 gen(rd());
 
-  // Define the distribution to generate numbers between -1 and 1
   std::uniform_real_distribution<> dis(-1.0, 1.0);
 
   // Fill the array with random values
@@ -300,6 +170,7 @@ void UI::populateRandomForce() {
 }
 
 void UI::resetForce() {
+  printForce();
   for (int i = 0; i < 8; ++i) {
     for (int j = 0; j < 8; ++j) {
       Force[i][j] = 0;
@@ -308,6 +179,15 @@ void UI::resetForce() {
 }
 
 void UI::defaultForce() {
+  for (int i = 0; i < 8; ++i) {
+    for (int j = 0; j < 8; ++j) {
+      Force[i][j] = defaultForceValue[i][j];
+    }
+  }
+}
+
+void UI::setDefaultForce() {
+  printForce();
   for (int i = 0; i < 8; ++i) {
     for (int j = 0; j < 8; ++j) {
       Force[i][j] = defaultForceValue[i][j];
@@ -330,32 +210,6 @@ void UI::initializeParticle(int ParticleCount, int NumOfParticleColor) {
   }
 }
 
-/* void UI::initializeParticle(int ParticleCount, int NumOfParticleColor) {
-  particles.clear();
-  int totalParticles = ParticleCount * NumOfParticleColor;
-  int gridSize = std::ceil(std::sqrt(totalParticles));
-  float cellWidth = static_cast<float>(width) / gridSize;
-  float cellHeight = static_cast<float>(height) / gridSize;
-
-  int index = 0;
-  for (int color = 0; color < NumOfParticleColor; color++) {
-    for (int m = 0; m < ParticleCount; m++) {
-      int row = index / gridSize;
-      int col = index % gridSize;
-
-      // Add some randomness within each cell
-      float offsetX = static_cast<float>(rand()) / RAND_MAX * cellWidth;
-      float offsetY = static_cast<float>(rand()) / RAND_MAX * cellHeight;
-
-      float x = col * cellWidth + offsetX;
-      float y = row * cellHeight + offsetY;
-
-      particles.emplace_back(x, y, color);
-      index++;
-    }
-  }
-} */
-
 void UI::updateParticle(double DeltaTime) {
   for (auto &particle : particles) {
     particle.update(particles, width, height, DeltaTime, radius, Force);
@@ -373,4 +227,60 @@ void UI::renderParticle(SDL_Renderer *Renderer) {
       particle.drawParticlePoint(Renderer);
     }
   }
+}
+void UI::createColorTreeNode(const char *label, int colorIndex) {
+
+  if (numOfParticleColor >= colorIndex + 1) {
+    if (ImGui::TreeNode(label)) {
+      for (int otherColor = 0; otherColor < COLOR_COUNT; ++otherColor) {
+        std::string sliderLabel =
+            std::string(label).substr(0, 1) + " x " + "RGBWYPCM"[otherColor];
+        if (otherColor == colorIndex) {
+          ImGui::SliderFloat(sliderLabel.c_str(),
+                             &Force[colorIndex][otherColor], -1, 1, 0,
+                             ImGuiSliderFlags_AlwaysClamp);
+        } else {
+          checkBool(colorIndex, static_cast<Color>(otherColor),
+                    sliderLabel.c_str());
+        }
+      }
+      ImGui::TreePop();
+      ImGui::Spacing();
+    }
+  }
+}
+
+void UI::showColorSliders() {
+  createColorTreeNode("Red", RED);
+  createColorTreeNode("Green", GREEN);
+  createColorTreeNode("Blue", BLUE);
+  createColorTreeNode("White", WHITE);
+  createColorTreeNode("Yellow", YELLOW);
+  createColorTreeNode("Purple", PURPLE);
+  createColorTreeNode("Cyan", CYAN);
+  createColorTreeNode("Magenta", MAGENTA);
+}
+
+void UI::printForce() {
+  const char *colorNames[COLOR_COUNT] = {"Red",    "Green",  "Blue", "White",
+                                         "Yellow", "Purple", "Cyan", "Magenta"};
+
+  std::cout << "\n\n\n<--START-->\n";
+  std::cout << std::fixed
+            << std::setprecision(2); // Set precision for floating-point values
+
+  std::cout << std::setw(8) << " ";
+  for (int i = 0; i < COLOR_COUNT; ++i) {
+    std::cout << std::setw(8) << colorNames[i];
+  }
+  std::cout << std::endl;
+
+  for (int i = 0; i < COLOR_COUNT; ++i) {
+    std::cout << std::setw(8) << colorNames[i];
+    for (int j = 0; j < COLOR_COUNT; ++j) {
+      std::cout << std::setw(8) << Force[i][j];
+    }
+    std::cout << std::endl;
+  }
+  std::cout << "<--END-->\n";
 }

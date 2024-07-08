@@ -9,100 +9,68 @@ const int DISPLACE = 360;
 particle::particle(float x, float y, int color)
     : x(x), y(y), vx(0), vy(0), color(color) {}
 
+const SDL_Color ColorMap[COLOR_COUNT] = {
+    {255, 0, 0, 255},     // RED
+    {0, 255, 0, 255},     // GREEN
+    {0, 0, 255, 255},     // BLUE
+    {255, 255, 255, 255}, // WHITE
+    {255, 255, 25, 255},  // YELLOW
+    {145, 30, 180, 255},  // PURPLE
+    {70, 240, 240, 255},  // CYAN
+    {240, 50, 230, 255}   // MAGENTA
+};
+
+// for particles with radius > 1
 void particle::drawParticle(SDL_Renderer *Renderer, int Radius) const {
-  switch (color) {
-  case RED:
-    SDL_SetRenderDrawColor(Renderer, 255, 0, 0, 255);
-    break; // Red
-  case GREEN:
-    SDL_SetRenderDrawColor(Renderer, 0, 255, 0, 255);
-    break; // Green
-  case BLUE:
-    SDL_SetRenderDrawColor(Renderer, 0, 0, 255, 255);
-    break; // Blue
-  case WHITE:
-    SDL_SetRenderDrawColor(Renderer, 255, 255, 255, 255);
-    break;
-  case YELLOW:
-    SDL_SetRenderDrawColor(Renderer, 255, 255, 25, 255);
-    break;
-  case PURPLE:
-    SDL_SetRenderDrawColor(Renderer, 145, 30, 180, 255);
-    break;
-  case CYAN:
-    SDL_SetRenderDrawColor(Renderer, 70, 240, 240, 255);
-    break;
-  case MAGENTA:
-    SDL_SetRenderDrawColor(Renderer, 240, 50, 230, 255);
-    break;
-  }
+  SDL_Color col = ColorMap[color];
+  SDL_SetRenderDrawColor(Renderer, col.r, col.g, col.b, col.a);
+
   SDL_Rect rect = calcParticleSize(Radius);
   SDL_RenderFillRect(Renderer, &rect);
 }
 
+// for particle radius < 1
 void particle::drawParticlePoint(SDL_Renderer *Renderer) const {
-  switch (color) {
-  case RED:
-    SDL_SetRenderDrawColor(Renderer, 255, 0, 0, 255);
-    break;
-  case GREEN:
-    SDL_SetRenderDrawColor(Renderer, 0, 255, 0, 255);
-    break;
-  case BLUE:
-    SDL_SetRenderDrawColor(Renderer, 0, 0, 255, 255);
-    break;
-  case WHITE:
-    SDL_SetRenderDrawColor(Renderer, 255, 255, 255, 255);
-    break;
-  case YELLOW:
-    SDL_SetRenderDrawColor(Renderer, 255, 255, 25, 255);
-    break;
-  case PURPLE:
-    SDL_SetRenderDrawColor(Renderer, 145, 30, 180, 255);
-    break;
-  case CYAN:
-    SDL_SetRenderDrawColor(Renderer, 70, 240, 240, 255);
-    break;
-  case MAGENTA:
-    SDL_SetRenderDrawColor(Renderer, 240, 50, 230, 255);
-    break;
-  }
+  SDL_Color col = ColorMap[color];
+  SDL_SetRenderDrawColor(Renderer, col.r, col.g, col.b, col.a);
   SDL_RenderDrawPoint(Renderer, x + DISPLACE, y);
 }
 
 void particle::update(const std::vector<particle> &Particles, float Width,
                       float Height, double deltaTime, int Radius,
                       float Force[COLOR_COUNT][COLOR_COUNT]) {
+
   for (const auto &other : Particles) {
     if (&other == this)
       continue;
 
     float dx = other.getPosX() - x;
     float dy = other.getPosY() - y;
-    float distance = std::sqrt(dx * dx + dy * dy);
 
-    bool tooClose = false;
-    bool tooFar = false;
+    if (dx > 0.5 * Width) {
+      dx = dx - Width;
+    }
+    if (dx < -0.5 * Width) {
+      dx = dx + Width;
+    }
+    if (dy > 0.5 * Height) {
+      dy = dy - Height;
+    }
+    if (dy < -0.5 * Height) {
+      dy = dy + Height;
+    }
+    float distance = std::hypot(dx, dy);
 
     float force = 0.0f;
-    if (distance < Radius * 1.5) {
-      force = -1.0f;
-      tooClose = true;
-    } else {
-      tooClose = false;
-    }
-    if (distance > 300) {
-      tooFar = true;
-    } else {
-      tooFar = false;
-    }
 
-    if (!tooClose && !tooFar) {
+    if (distance < Radius * 3.0f) {
+      force = -1.0f;
+    } else if (distance <= 300) {
       force = Force[color][other.color];
     }
 
-    float fx = force * (dx / distance);
-    float fy = force * (dy / distance);
+    float fx = force * (dx / (1.2 * distance));
+    float fy = force * (dy / (1.2 * distance));
 
     vx += fx;
     vy += fy;

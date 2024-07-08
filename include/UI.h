@@ -25,8 +25,14 @@ public:
   void populateRandomForce();
   void resetForce();
   void defaultForce();
+  void setDefaultForce();
+
+  void createColorTreeNode(const char *label, int colorIndex);
+  void showColorSliders();
+  void printForce();
 
 private:
+  bool showDemoWindow = true;
   int width, height;
 
   int radius = 3;
