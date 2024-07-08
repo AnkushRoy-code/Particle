@@ -4,8 +4,6 @@
 #include "imgui_impl_sdlrenderer2.h"
 #include <SDL.h>
 #include <ctime>
-#include <iomanip>
-#include <iostream>
 #include <random>
 
 void UI::initialize(SDL_Window *window, SDL_Renderer *renderer) {
@@ -18,6 +16,7 @@ void UI::initialize(SDL_Window *window, SDL_Renderer *renderer) {
   io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
   io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;
   io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
+  io.ConfigFlags |= ImGuiTreeNodeFlags_DefaultOpen;
 
   ImGui::StyleColorsDark();
 
@@ -46,11 +45,24 @@ static void HelpMarker(const char *desc) {
 
 void UI::checkBool(int start, int end, const char *string) {
   if (numOfParticleColor >= end + 1) {
-    ImGui::SliderFloat(string, &Force[start][end], -1, 1, 0,
+    ImGui::SliderFloat(string, &Force[start][end], -1, 1, "%.3f",
                        ImGuiSliderFlags_AlwaysClamp);
   }
 }
 
+void UI::checkBoolMinDist(int start, int end, const char *string) {
+  if (numOfParticleColor >= end + 1) {
+    ImGui::SliderInt(string, &minDist[start][end], 1, 30, "%d",
+                     ImGuiSliderFlags_AlwaysClamp);
+  }
+}
+
+void UI::checkBoolMaxDist(int start, int end, const char *string) {
+  if (numOfParticleColor >= end + 1) {
+    ImGui::SliderInt(string, &maxDist[start][end], 150, 300, "%d",
+                     ImGuiSliderFlags_AlwaysClamp);
+  }
+}
 bool UI::setup() {
   ImGui_ImplSDLRenderer2_NewFrame();
   ImGui_ImplSDL2_NewFrame();
@@ -104,12 +116,8 @@ bool UI::setup() {
       initializeParticle(particleCount, numOfParticleColor);
     }
 
-    ImGui::Spacing();
-    ImGui::Separator();
-    ImGui::Spacing();
-
     // NOTE: force
-    if (ImGui::TreeNode("Force Control")) {
+    if (ImGui::CollapsingHeader("Focus Control")) {
 
       if (ImGui::Button("Random Forces")) {
         populateRandomForce();
@@ -134,16 +142,10 @@ bool UI::setup() {
       }
       showColorSliders();
       ImGui::LogFinish();
-
-      ImGui::TreePop();
     }
 
-    ImGui::Spacing();
-    ImGui::Separator();
-    ImGui::Spacing();
-
     // NOTE: min dist
-    if (ImGui::TreeNode("Minimum Distance Control")) {
+    if (ImGui::CollapsingHeader("Minimum Distance Control")) {
 
       if (ImGui::Button("Random Min Dist")) {
         populateRandomMinDistance();
@@ -167,16 +169,10 @@ bool UI::setup() {
       }
       showMinDistSliders();
       ImGui::LogFinish();
-
-      ImGui::TreePop();
     }
 
-    ImGui::Spacing();
-    ImGui::Separator();
-    ImGui::Spacing();
-
     // NOTE: max dist
-    if (ImGui::TreeNode("Maximum Distance Control")) {
+    if (ImGui::CollapsingHeader("Maximum Distance Control")) {
 
       if (ImGui::Button("Random Max Dist")) {
         populateRandomMaxDistance();
@@ -200,8 +196,6 @@ bool UI::setup() {
       }
       showMaxDistSliders();
       ImGui::LogFinish();
-
-      ImGui::TreePop();
     }
     ImGui::End();
   }
@@ -236,10 +230,11 @@ void UI::setRadius(int Radius) { radius = Radius; }
 UI::UI(int Width, int Height) : width(Width), height(Height) {
   srand(time(NULL));
   defaultForce();
+  defaultMinDistance();
+  defaultMaxDistance();
 }
 
 void UI::populateRandomForce() {
-  printForce();
   std::random_device rd;
   std::mt19937 gen(rd());
 
@@ -282,7 +277,6 @@ void UI::populateRandomMaxDistance() {
 }
 
 void UI::resetForce() {
-  printForce();
   for (int i = 0; i < 8; ++i) {
     for (int j = 0; j < 8; ++j) {
       Force[i][j] = 0;
@@ -301,7 +295,7 @@ void UI::resetMinDistance() {
 void UI::resetMaxDistance() {
   for (int i = 0; i < 8; ++i) {
     for (int j = 0; j < 8; ++j) {
-      minDist[i][j] = 0;
+      maxDist[i][j] = 0;
     }
   }
 }
@@ -331,7 +325,6 @@ void UI::defaultMaxDistance() {
 }
 
 void UI::setDefaultForce() {
-  printForce();
   for (int i = 0; i < 8; ++i) {
     for (int j = 0; j < 8; ++j) {
       Force[i][j] = defaultForceValue[i][j];
@@ -389,20 +382,67 @@ void UI::renderParticle(SDL_Renderer *Renderer) {
     }
   }
 }
-void UI::createColorTreeNode(const char *label, int colorIndex) {
 
+void UI::createColorTreeNode(const char *label, int colorIndex) {
   if (numOfParticleColor >= colorIndex + 1) {
     if (ImGui::TreeNode(label)) {
       for (int otherColor = 0; otherColor < COLOR_COUNT; ++otherColor) {
         std::string sliderLabel =
-            std::string(label).substr(0, 1) + " x " + "RGBWYPCM"[otherColor];
+            std::string(label).substr(0, 1) + " x " + "RGBWYPCM"[otherColor] +
+            "##Force" + std::to_string(colorIndex) + std::to_string(otherColor);
         if (otherColor == colorIndex) {
           ImGui::SliderFloat(sliderLabel.c_str(),
-                             &Force[colorIndex][otherColor], -1, 1, 0,
+                             &Force[colorIndex][otherColor], -1, 1, "%.2f",
                              ImGuiSliderFlags_AlwaysClamp);
         } else {
           checkBool(colorIndex, static_cast<Color>(otherColor),
                     sliderLabel.c_str());
+        }
+      }
+      ImGui::TreePop();
+      ImGui::Spacing();
+    }
+  }
+}
+
+void UI::createMinDistTreeNode(const char *label, int colorIndex) {
+  if (numOfParticleColor >= colorIndex + 1) {
+    if (ImGui::TreeNode(label)) {
+      for (int otherColor = 0; otherColor < COLOR_COUNT; ++otherColor) {
+        std::string sliderLabel = std::string(label).substr(0, 1) + " x " +
+                                  "RGBWYPCM"[otherColor] + "##MinDist" +
+                                  std::to_string(colorIndex) +
+                                  std::to_string(otherColor);
+        if (otherColor == colorIndex) {
+          ImGui::SliderInt(sliderLabel.c_str(),
+                           &minDist[colorIndex][otherColor], 1, 30, "%d",
+                           ImGuiSliderFlags_AlwaysClamp);
+        } else {
+          checkBoolMinDist(colorIndex, static_cast<Color>(otherColor),
+                           sliderLabel.c_str());
+        }
+      }
+      ImGui::TreePop();
+      ImGui::Spacing();
+    }
+  }
+}
+
+void UI::createMaxDistTreeNode(const char *label, int colorIndex) {
+  if (numOfParticleColor >= colorIndex + 1) {
+    if (ImGui::TreeNode(label)) {
+      for (int otherColor = 0; otherColor < COLOR_COUNT; ++otherColor) {
+        std::string sliderLabel = std::string(label).substr(0, 1) + " x " +
+                                  "RGBWYPCM"[otherColor] + "##MaxDist" +
+                                  std::to_string(colorIndex) +
+                                  std::to_string(otherColor);
+        if (otherColor == colorIndex) {
+          ImGui::SliderInt(sliderLabel.c_str(),
+                           &maxDist[colorIndex][otherColor], 150, 300, "%d",
+                           ImGuiSliderFlags_AlwaysClamp);
+        } else {
+          checkBoolMaxDist(colorIndex, static_cast<Color>(otherColor),
+                           sliderLabel.c_str());
         }
       }
       ImGui::TreePop();
@@ -422,92 +462,24 @@ void UI::showColorSliders() {
   createColorTreeNode("Magenta", MAGENTA);
 }
 
-void UI::createMinDistTreeNode(const char *label, int colorIndex) {
-
-  if (numOfParticleColor >= colorIndex + 1) {
-    if (ImGui::TreeNode(label)) {
-      for (int otherColor = 0; otherColor < COLOR_COUNT; ++otherColor) {
-        std::string sliderLabel =
-            std::string(label).substr(0, 1) + " x " + "RGBWYPCM"[otherColor];
-        if (otherColor == colorIndex) {
-          ImGui::SliderInt(sliderLabel.c_str(),
-                           &minDist[colorIndex][otherColor], 1, 30, 0,
-                           ImGuiSliderFlags_AlwaysClamp);
-        } else {
-          checkBool(colorIndex, static_cast<Color>(otherColor),
-                    sliderLabel.c_str());
-        }
-      }
-      ImGui::TreePop();
-      ImGui::Spacing();
-    }
-  }
-}
-
 void UI::showMinDistSliders() {
-  createMinDistTreeNode("Red", RED);
-  createMinDistTreeNode("Green", GREEN);
-  createMinDistTreeNode("Blue", BLUE);
-  createMinDistTreeNode("White", WHITE);
-  createMinDistTreeNode("Yellow", YELLOW);
-  createMinDistTreeNode("Purple", PURPLE);
-  createMinDistTreeNode("Cyan", CYAN);
-  createMinDistTreeNode("Magenta", MAGENTA);
-}
-
-void UI::createMaxDistTreeNode(const char *label, int colorIndex) {
-
-  if (numOfParticleColor >= colorIndex + 1) {
-    if (ImGui::TreeNode(label)) {
-      for (int otherColor = 0; otherColor < COLOR_COUNT; ++otherColor) {
-        std::string sliderLabel =
-            std::string(label).substr(0, 1) + " x " + "RGBWYPCM"[otherColor];
-        if (otherColor == colorIndex) {
-          ImGui::SliderInt(sliderLabel.c_str(),
-                           &maxDist[colorIndex][otherColor], 150, 300, 0,
-                           ImGuiSliderFlags_AlwaysClamp);
-        } else {
-          checkBool(colorIndex, static_cast<Color>(otherColor),
-                    sliderLabel.c_str());
-        }
-      }
-      ImGui::TreePop();
-      ImGui::Spacing();
-    }
-  }
+  createMinDistTreeNode("RedMin", RED);
+  createMinDistTreeNode("GreenMin", GREEN);
+  createMinDistTreeNode("BlueMin", BLUE);
+  createMinDistTreeNode("WhiteMin", WHITE);
+  createMinDistTreeNode("YellowMin", YELLOW);
+  createMinDistTreeNode("PurpleMin", PURPLE);
+  createMinDistTreeNode("CyanMin", CYAN);
+  createMinDistTreeNode("MagentaMin", MAGENTA);
 }
 
 void UI::showMaxDistSliders() {
-  createMaxDistTreeNode("RedMin", RED);
-  createMaxDistTreeNode("GreenMin", GREEN);
-  createMaxDistTreeNode("BlueMin", BLUE);
-  createMaxDistTreeNode("WhiteMin", WHITE);
-  createMaxDistTreeNode("YellowMin", YELLOW);
-  createMaxDistTreeNode("PurpleMin", PURPLE);
-  createMaxDistTreeNode("CyanMin", CYAN);
-  createMaxDistTreeNode("MagentaMin", MAGENTA);
-}
-
-void UI::printForce() {
-  const char *colorNames[COLOR_COUNT] = {"Red",    "Green",  "Blue", "White",
-                                         "Yellow", "Purple", "Cyan", "Magenta"};
-
-  std::cout << "\n\n\n<--START-->\n";
-  std::cout << std::fixed
-            << std::setprecision(2); // Set precision for floating-point values
-
-  std::cout << std::setw(8) << " ";
-  for (int i = 0; i < COLOR_COUNT; ++i) {
-    std::cout << std::setw(8) << colorNames[i];
-  }
-  std::cout << std::endl;
-
-  for (int i = 0; i < COLOR_COUNT; ++i) {
-    std::cout << std::setw(8) << colorNames[i];
-    for (int j = 0; j < COLOR_COUNT; ++j) {
-      std::cout << std::setw(8) << Force[i][j];
-    }
-    std::cout << std::endl;
-  }
-  std::cout << "<--END-->\n";
+  createMaxDistTreeNode("RedMax", RED);
+  createMaxDistTreeNode("GreenMax", GREEN);
+  createMaxDistTreeNode("BlueMax", BLUE);
+  createMaxDistTreeNode("WhiteMax", WHITE);
+  createMaxDistTreeNode("YellowMax", YELLOW);
+  createMaxDistTreeNode("PurpleMax", PURPLE);
+  createMaxDistTreeNode("CyanMax", CYAN);
+  createMaxDistTreeNode("MagentaMax", MAGENTA);
 }

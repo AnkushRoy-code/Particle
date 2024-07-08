@@ -22,28 +22,32 @@ public:
   void setRadius(int Radius);
 
   void checkBool(int start, int end, const char *string);
+  void checkBoolMinDist(int start, int end, const char *string);
+  void checkBoolMaxDist(int start, int end, const char *string);
+
   void populateRandomForce();
-  void resetForce();
-  void defaultForce();
-  void setDefaultForce();
-
   void populateRandomMinDistance();
-  void resetMinDistance();
-  void defaultMinDistance();
-  void setDefaultMinDistance();
-
   void populateRandomMaxDistance();
+
+  void resetForce();
+  void resetMinDistance();
   void resetMaxDistance();
+
+  void defaultForce();
+  void defaultMinDistance();
   void defaultMaxDistance();
+
+  void setDefaultForce();
+  void setDefaultMinDistance();
   void setDefaultMaxDistance();
 
   void createColorTreeNode(const char *label, int colorIndex);
   void createMinDistTreeNode(const char *label, int colorIndex);
   void createMaxDistTreeNode(const char *label, int colorIndex);
+
   void showColorSliders();
   void showMinDistSliders();
   void showMaxDistSliders();
-  void printForce();
 
 private:
   bool showDemoWindow = true;
