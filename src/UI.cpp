@@ -70,7 +70,9 @@ bool UI::setup() {
     if (ImGui::Button("Quit?")) {
       QUIT = true;
     }
-
+    if (ImGui::Button("Quit Demo?")) {
+      showDemoWindow = !showDemoWindow;
+    }
     ImGui::SeparatorText("Global variables");
 
     ImGui::SliderInt("Radius", &radius, 0, 10, 0, guiWidgetFlags);
@@ -101,24 +103,106 @@ bool UI::setup() {
     if (ImGui::Button("Refresh")) {
       initializeParticle(particleCount, numOfParticleColor);
     }
-    ImGui::SeparatorText("Force Controls");
-    if (ImGui::Button("Random Forces")) {
-      populateRandomForce();
-    }
-    ImGui::SameLine();
-    if (ImGui::Button("Reset Force")) {
-      resetForce();
-    }
-    ImGui::SameLine();
-    if (ImGui::Button("Default Force")) {
-      setDefaultForce();
-    }
+
+    ImGui::Spacing();
     ImGui::Separator();
-    if (ImGui::Button("Log To File")) {
-      ImGui::LogToFile(2, "data.txt");
+    ImGui::Spacing();
+
+    // NOTE: force
+    if (ImGui::TreeNode("Force Control")) {
+
+      if (ImGui::Button("Random Forces")) {
+        populateRandomForce();
+      }
+      ImGui::SameLine();
+      if (ImGui::Button("Reset Force")) {
+        resetForce();
+      }
+      ImGui::SameLine();
+      if (ImGui::Button("Default Force")) {
+        setDefaultForce();
+      }
+
+      ImGui::Spacing();
+      ImGui::Separator();
+      ImGui::Spacing();
+
+      if (ImGui::Button("Save Forces To File")) {
+        ImGui::LogToFile(2, "forces.txt");
+        ImGui::SameLine();
+        HelpMarker("These forces is saved inside forces.txt file");
+      }
+      showColorSliders();
+      ImGui::LogFinish();
+
+      ImGui::TreePop();
     }
-    showColorSliders();
-    ImGui::LogFinish();
+
+    ImGui::Spacing();
+    ImGui::Separator();
+    ImGui::Spacing();
+
+    // NOTE: min dist
+    if (ImGui::TreeNode("Minimum Distance Control")) {
+
+      if (ImGui::Button("Random Min Dist")) {
+        populateRandomMinDistance();
+      }
+      ImGui::SameLine();
+      if (ImGui::Button("Reset Min Dist")) {
+        resetMinDistance();
+      }
+      if (ImGui::Button("Default MinDist")) {
+        setDefaultMinDistance();
+      }
+
+      ImGui::Spacing();
+      ImGui::Separator();
+      ImGui::Spacing();
+
+      if (ImGui::Button("Save Min Dist To File")) {
+        ImGui::LogToFile(2, "minDist.txt");
+        ImGui::SameLine();
+        HelpMarker("These forces is saved inside minDist.txt file");
+      }
+      showMinDistSliders();
+      ImGui::LogFinish();
+
+      ImGui::TreePop();
+    }
+
+    ImGui::Spacing();
+    ImGui::Separator();
+    ImGui::Spacing();
+
+    // NOTE: max dist
+    if (ImGui::TreeNode("Maximum Distance Control")) {
+
+      if (ImGui::Button("Random Max Dist")) {
+        populateRandomMaxDistance();
+      }
+      ImGui::SameLine();
+      if (ImGui::Button("Reset Max Dist")) {
+        resetMaxDistance();
+      }
+      if (ImGui::Button("Default MaxDist")) {
+        setDefaultMaxDistance();
+      }
+
+      ImGui::Spacing();
+      ImGui::Separator();
+      ImGui::Spacing();
+
+      if (ImGui::Button("Save Min Dist To File")) {
+        ImGui::LogToFile(2, "maxDist.txt");
+        ImGui::SameLine();
+        HelpMarker("These forces is saved inside maxDist.txt file");
+      }
+      showMaxDistSliders();
+      ImGui::LogFinish();
+
+      ImGui::TreePop();
+    }
     ImGui::End();
   }
   if (showDemoWindow) {
@@ -169,11 +253,55 @@ void UI::populateRandomForce() {
   }
 }
 
+void UI::populateRandomMinDistance() {
+  std::random_device rd;
+  std::mt19937 gen(rd());
+
+  std::uniform_real_distribution<> dis(1, 20);
+
+  // Fill the array with random values
+  for (int i = 0; i < 8; ++i) {
+    for (int j = 0; j < 8; ++j) {
+      minDist[i][j] = dis(gen);
+    }
+  }
+}
+
+void UI::populateRandomMaxDistance() {
+  std::random_device rd;
+  std::mt19937 gen(rd());
+
+  std::uniform_real_distribution<> dis(100, 300);
+
+  // Fill the array with random values
+  for (int i = 0; i < 8; ++i) {
+    for (int j = 0; j < 8; ++j) {
+      maxDist[i][j] = dis(gen);
+    }
+  }
+}
+
 void UI::resetForce() {
   printForce();
   for (int i = 0; i < 8; ++i) {
     for (int j = 0; j < 8; ++j) {
       Force[i][j] = 0;
+    }
+  }
+}
+
+void UI::resetMinDistance() {
+  for (int i = 0; i < 8; ++i) {
+    for (int j = 0; j < 8; ++j) {
+      minDist[i][j] = 0;
+    }
+  }
+}
+
+void UI::resetMaxDistance() {
+  for (int i = 0; i < 8; ++i) {
+    for (int j = 0; j < 8; ++j) {
+      minDist[i][j] = 0;
     }
   }
 }
@@ -186,11 +314,43 @@ void UI::defaultForce() {
   }
 }
 
+void UI::defaultMinDistance() {
+  for (int i = 0; i < 8; ++i) {
+    for (int j = 0; j < 8; ++j) {
+      minDist[i][j] = defaultMinDistanceValue[i][j];
+    }
+  }
+}
+
+void UI::defaultMaxDistance() {
+  for (int i = 0; i < 8; ++i) {
+    for (int j = 0; j < 8; ++j) {
+      maxDist[i][j] = defaultMaxDistanceValue[i][j];
+    }
+  }
+}
+
 void UI::setDefaultForce() {
   printForce();
   for (int i = 0; i < 8; ++i) {
     for (int j = 0; j < 8; ++j) {
       Force[i][j] = defaultForceValue[i][j];
+    }
+  }
+}
+
+void UI::setDefaultMinDistance() {
+  for (int i = 0; i < 8; ++i) {
+    for (int j = 0; j < 8; ++j) {
+      minDist[i][j] = defaultMinDistanceValue[i][j];
+    }
+  }
+}
+
+void UI::setDefaultMaxDistance() {
+  for (int i = 0; i < 8; ++i) {
+    for (int j = 0; j < 8; ++j) {
+      maxDist[i][j] = defaultMaxDistanceValue[i][j];
     }
   }
 }
@@ -212,7 +372,8 @@ void UI::initializeParticle(int ParticleCount, int NumOfParticleColor) {
 
 void UI::updateParticle(double DeltaTime) {
   for (auto &particle : particles) {
-    particle.update(particles, width, height, DeltaTime, radius, Force);
+    particle.update(particles, width, height, DeltaTime, radius, Force, minDist,
+                    maxDist);
   }
 }
 
@@ -259,6 +420,72 @@ void UI::showColorSliders() {
   createColorTreeNode("Purple", PURPLE);
   createColorTreeNode("Cyan", CYAN);
   createColorTreeNode("Magenta", MAGENTA);
+}
+
+void UI::createMinDistTreeNode(const char *label, int colorIndex) {
+
+  if (numOfParticleColor >= colorIndex + 1) {
+    if (ImGui::TreeNode(label)) {
+      for (int otherColor = 0; otherColor < COLOR_COUNT; ++otherColor) {
+        std::string sliderLabel =
+            std::string(label).substr(0, 1) + " x " + "RGBWYPCM"[otherColor];
+        if (otherColor == colorIndex) {
+          ImGui::SliderInt(sliderLabel.c_str(),
+                           &minDist[colorIndex][otherColor], 1, 30, 0,
+                           ImGuiSliderFlags_AlwaysClamp);
+        } else {
+          checkBool(colorIndex, static_cast<Color>(otherColor),
+                    sliderLabel.c_str());
+        }
+      }
+      ImGui::TreePop();
+      ImGui::Spacing();
+    }
+  }
+}
+
+void UI::showMinDistSliders() {
+  createMinDistTreeNode("Red", RED);
+  createMinDistTreeNode("Green", GREEN);
+  createMinDistTreeNode("Blue", BLUE);
+  createMinDistTreeNode("White", WHITE);
+  createMinDistTreeNode("Yellow", YELLOW);
+  createMinDistTreeNode("Purple", PURPLE);
+  createMinDistTreeNode("Cyan", CYAN);
+  createMinDistTreeNode("Magenta", MAGENTA);
+}
+
+void UI::createMaxDistTreeNode(const char *label, int colorIndex) {
+
+  if (numOfParticleColor >= colorIndex + 1) {
+    if (ImGui::TreeNode(label)) {
+      for (int otherColor = 0; otherColor < COLOR_COUNT; ++otherColor) {
+        std::string sliderLabel =
+            std::string(label).substr(0, 1) + " x " + "RGBWYPCM"[otherColor];
+        if (otherColor == colorIndex) {
+          ImGui::SliderInt(sliderLabel.c_str(),
+                           &maxDist[colorIndex][otherColor], 150, 300, 0,
+                           ImGuiSliderFlags_AlwaysClamp);
+        } else {
+          checkBool(colorIndex, static_cast<Color>(otherColor),
+                    sliderLabel.c_str());
+        }
+      }
+      ImGui::TreePop();
+      ImGui::Spacing();
+    }
+  }
+}
+
+void UI::showMaxDistSliders() {
+  createMaxDistTreeNode("RedMin", RED);
+  createMaxDistTreeNode("GreenMin", GREEN);
+  createMaxDistTreeNode("BlueMin", BLUE);
+  createMaxDistTreeNode("WhiteMin", WHITE);
+  createMaxDistTreeNode("YellowMin", YELLOW);
+  createMaxDistTreeNode("PurpleMin", PURPLE);
+  createMaxDistTreeNode("CyanMin", CYAN);
+  createMaxDistTreeNode("MagentaMin", MAGENTA);
 }
 
 void UI::printForce() {

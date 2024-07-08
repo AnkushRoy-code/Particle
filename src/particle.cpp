@@ -38,7 +38,9 @@ void particle::drawParticlePoint(SDL_Renderer *Renderer) const {
 
 void particle::update(const std::vector<particle> &Particles, float Width,
                       float Height, double deltaTime, int Radius,
-                      float Force[COLOR_COUNT][COLOR_COUNT]) {
+                      float Force[COLOR_COUNT][COLOR_COUNT],
+                      int MinDistance[COLOR_COUNT][COLOR_COUNT],
+                      int MaxDistance[COLOR_COUNT][COLOR_COUNT]) {
 
   for (const auto &other : Particles) {
     if (&other == this)
