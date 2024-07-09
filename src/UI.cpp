@@ -115,6 +115,8 @@ bool UI::setup() {
     if (ImGui::Button("Refresh")) {
       initializeParticle(particleCount, numOfParticleColor);
     }
+    ImGui::Checkbox("Show MinDist Control", &showMinDistControl);
+    ImGui::Checkbox("Show MaxDist Control", &showMaxDistControl);
 
     // NOTE: force
     if (ImGui::CollapsingHeader("Focus Control")) {
@@ -137,6 +139,9 @@ bool UI::setup() {
 
       if (ImGui::Button("Save Forces To File")) {
         ImGui::LogToFile(2, "forces.txt");
+
+        // FIX: This helper line doesn't show fsr and the ones later on like
+        // this
         ImGui::SameLine();
         HelpMarker("These forces is saved inside forces.txt file");
       }
@@ -145,57 +150,61 @@ bool UI::setup() {
     }
 
     // NOTE: min dist
-    if (ImGui::CollapsingHeader("Minimum Distance Control")) {
+    if (showMinDistControl) {
+      if (ImGui::CollapsingHeader("Minimum Distance Control")) {
 
-      if (ImGui::Button("Random Min Dist")) {
-        populateRandomMinDistance();
-      }
-      ImGui::SameLine();
-      if (ImGui::Button("Reset Min Dist")) {
-        resetMinDistance();
-      }
-      if (ImGui::Button("Default MinDist")) {
-        setDefaultMinDistance();
-      }
-
-      ImGui::Spacing();
-      ImGui::Separator();
-      ImGui::Spacing();
-
-      if (ImGui::Button("Save Min Dist To File")) {
-        ImGui::LogToFile(2, "minDist.txt");
+        if (ImGui::Button("Random Min Dist")) {
+          populateRandomMinDistance();
+        }
         ImGui::SameLine();
-        HelpMarker("These forces is saved inside minDist.txt file");
+        if (ImGui::Button("Reset Min Dist")) {
+          resetMinDistance();
+        }
+        if (ImGui::Button("Default MinDist")) {
+          setDefaultMinDistance();
+        }
+
+        ImGui::Spacing();
+        ImGui::Separator();
+        ImGui::Spacing();
+
+        if (ImGui::Button("Save Min Dist To File")) {
+          ImGui::LogToFile(2, "minDist.txt");
+          ImGui::SameLine();
+          HelpMarker("These forces is saved inside minDist.txt file");
+        }
+        showMinDistSliders();
+        ImGui::LogFinish();
       }
-      showMinDistSliders();
-      ImGui::LogFinish();
     }
 
     // NOTE: max dist
-    if (ImGui::CollapsingHeader("Maximum Distance Control")) {
+    if (showMaxDistControl) {
+      if (ImGui::CollapsingHeader("Maximum Distance Control")) {
 
-      if (ImGui::Button("Random Max Dist")) {
-        populateRandomMaxDistance();
-      }
-      ImGui::SameLine();
-      if (ImGui::Button("Reset Max Dist")) {
-        resetMaxDistance();
-      }
-      if (ImGui::Button("Default MaxDist")) {
-        setDefaultMaxDistance();
-      }
-
-      ImGui::Spacing();
-      ImGui::Separator();
-      ImGui::Spacing();
-
-      if (ImGui::Button("Save Min Dist To File")) {
-        ImGui::LogToFile(2, "maxDist.txt");
+        if (ImGui::Button("Random Max Dist")) {
+          populateRandomMaxDistance();
+        }
         ImGui::SameLine();
-        HelpMarker("These forces is saved inside maxDist.txt file");
+        if (ImGui::Button("Reset Max Dist")) {
+          resetMaxDistance();
+        }
+        if (ImGui::Button("Default MaxDist")) {
+          setDefaultMaxDistance();
+        }
+
+        ImGui::Spacing();
+        ImGui::Separator();
+        ImGui::Spacing();
+
+        if (ImGui::Button("Save Max Dist To File")) {
+          ImGui::LogToFile(2, "maxDist.txt");
+          ImGui::SameLine();
+          HelpMarker("These forces is saved inside maxDist.txt file");
+        }
+        showMaxDistSliders();
+        ImGui::LogFinish();
       }
-      showMaxDistSliders();
-      ImGui::LogFinish();
     }
     ImGui::End();
   }
@@ -252,7 +261,7 @@ void UI::populateRandomMinDistance() {
   std::random_device rd;
   std::mt19937 gen(rd());
 
-  std::uniform_real_distribution<> dis(1, 20);
+  std::uniform_real_distribution<> dis(10, 30);
 
   // Fill the array with random values
   for (int i = 0; i < 8; ++i) {
@@ -266,7 +275,7 @@ void UI::populateRandomMaxDistance() {
   std::random_device rd;
   std::mt19937 gen(rd());
 
-  std::uniform_real_distribution<> dis(100, 300);
+  std::uniform_real_distribution<> dis(150, 300);
 
   // Fill the array with random values
   for (int i = 0; i < 8; ++i) {
@@ -287,7 +296,7 @@ void UI::resetForce() {
 void UI::resetMinDistance() {
   for (int i = 0; i < 8; ++i) {
     for (int j = 0; j < 8; ++j) {
-      minDist[i][j] = 0;
+      minDist[i][j] = 3;
     }
   }
 }
@@ -295,7 +304,7 @@ void UI::resetMinDistance() {
 void UI::resetMaxDistance() {
   for (int i = 0; i < 8; ++i) {
     for (int j = 0; j < 8; ++j) {
-      maxDist[i][j] = 0;
+      maxDist[i][j] = 200;
     }
   }
 }
@@ -365,7 +374,7 @@ void UI::initializeParticle(int ParticleCount, int NumOfParticleColor) {
 
 void UI::updateParticle(double DeltaTime) {
   for (auto &particle : particles) {
-    particle.update(particles, width, height, DeltaTime, radius, Force, minDist,
+    particle.update(particles, width, height, DeltaTime, Force, minDist,
                     maxDist);
   }
 }

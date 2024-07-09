@@ -10,8 +10,7 @@ public:
   void drawParticle(SDL_Renderer *Renderer, int Radius) const;
   void drawParticlePoint(SDL_Renderer *Renderer) const;
   void update(const std::vector<particle> &Particles, float Width, float Height,
-              double deltaTime, int Radius,
-              float Force[COLOR_COUNT][COLOR_COUNT],
+              double deltaTime, float Force[COLOR_COUNT][COLOR_COUNT],
               int MinDist[COLOR_COUNT][COLOR_COUNT],
               int MaxDist[COLOR_COUNT][COLOR_COUNT]);
 
