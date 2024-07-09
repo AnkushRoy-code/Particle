@@ -10,8 +10,9 @@ public:
   void drawParticle(SDL_Renderer *Renderer, int Radius) const;
   void drawParticlePoint(SDL_Renderer *Renderer) const;
   void update(const std::vector<particle> &Particles, float Width, float Height,
-              double deltaTime, int Radius,
-              float Force[COLOR_COUNT][COLOR_COUNT]);
+              double deltaTime, float Force[COLOR_COUNT][COLOR_COUNT],
+              int MinDist[COLOR_COUNT][COLOR_COUNT],
+              int MaxDist[COLOR_COUNT][COLOR_COUNT]);
 
   float getPosX() const;
   float getPosY() const;
@@ -29,6 +30,8 @@ private:
   // Yellow(4), Purple(5), Cyan(6), Magenta(7)
 
   float force[COLOR_COUNT][COLOR_COUNT];
+  int minDist[COLOR_COUNT][COLOR_COUNT];
+  int maxDist[COLOR_COUNT][COLOR_COUNT];
 
 private:
   SDL_Rect calcParticleSize(int Radius) const;
