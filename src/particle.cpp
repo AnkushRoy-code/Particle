@@ -1,9 +1,10 @@
 #include "particle.h"
 #include "color.h"
 #include <SDL.h>
-#include <SDL_render.h>
 #include <SDL_timer.h>
 
+// this is the width of the control pannel every particle is displaced this
+// amount of distance to the right of the screen so they don't overlap.
 const int DISPLACE = 360;
 
 particle::particle(float x, float y, int color)
@@ -20,22 +21,26 @@ const SDL_Color ColorMap[COLOR_COUNT] = {
     {240, 50, 230, 255}   // MAGENTA
 };
 
-// for particles with radius > 1
+// for particle radius > 1 calculate the rect wrt particle position and then
+// render the rect.
 void particle::drawParticle(SDL_Renderer *Renderer, int Radius) const {
   SDL_Color col = ColorMap[color];
   SDL_SetRenderDrawColor(Renderer, col.r, col.g, col.b, col.a);
 
-  SDL_Rect rect = calcParticleSize(Radius);
+  SDL_Rect rect = calcParticleSize(
+      Radius); // a very special magical formulae I made to calculating rect.
   SDL_RenderFillRect(Renderer, &rect);
 }
 
-// for particle radius < 1
+// for particles with radius < 1 just draw a point instead of calculating the
+// rect and then rendering it.
 void particle::drawParticlePoint(SDL_Renderer *Renderer) const {
   SDL_Color col = ColorMap[color];
   SDL_SetRenderDrawColor(Renderer, col.r, col.g, col.b, col.a);
   SDL_RenderDrawPoint(Renderer, x + DISPLACE, y);
 }
 
+// this is the main logic of the particle simulation.
 void particle::update(const std::vector<particle> &Particles, float Width,
                       float Height, double deltaTime,
                       float Force[COLOR_COUNT][COLOR_COUNT],
@@ -43,12 +48,16 @@ void particle::update(const std::vector<particle> &Particles, float Width,
                       int MaxDistance[COLOR_COUNT][COLOR_COUNT]) {
 
   for (const auto &other : Particles) {
+    // skip calculating force with itself.
     if (&other == this)
       continue;
 
     float dx = other.getPosX() - x;
     float dy = other.getPosY() - y;
 
+    // these 4 if statements are so that the particle force wrap around. Not the
+    // particle itself. There's another function that does it later in this same
+    // function.
     if (dx > 0.5 * Width) {
       dx = dx - Width;
     }
@@ -61,10 +70,15 @@ void particle::update(const std::vector<particle> &Particles, float Width,
     if (dy < -0.5 * Height) {
       dy = dy + Height;
     }
-    float distance = std::hypot(dx, dy);
+
+    // calculate distance between the 2 particles.
+    float distance =
+        std::hypot(dx, dy); // hypot does this: (x*x + y*y)^0.5 since it is
+                            // a inbuilt function i decided to use it.
 
     float force = 0.0f;
 
+    // the user sets the min/max distances
     if (distance < MinDistance[color][other.color]) {
       force = -1.0f;
     } else if (distance <= MaxDistance[color][other.color]) {
@@ -78,15 +92,18 @@ void particle::update(const std::vector<particle> &Particles, float Width,
     vy += fy;
   }
 
+  // you gotta multiply everyting with deltaTime.
   x += vx * deltaTime;
   y += vy * deltaTime;
 
   vx *= 0.95f;
   vy *= 0.95f;
 
+  // this wrap arounds the particle position itself if it goes out of bounds.
   wrapAround(Width, Height);
 }
 
+// calculate the particle rect size.
 SDL_Rect particle::calcParticleSize(int Radius) const {
   SDL_Rect rect;
   if (Radius == 1) {
@@ -122,6 +139,6 @@ void particle::setForce(int ColorA, int ColorB, float Value) {
   force[ColorA][ColorB] = Value;
 }
 
-int particle::getColor() const { return color; }
+// i wonder what they do ...
 float particle::getPosX() const { return x; }
 float particle::getPosY() const { return y; }

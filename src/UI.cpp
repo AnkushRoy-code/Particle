@@ -1,3 +1,5 @@
+// this is the file I worked the most on.
+
 #include "UI.h"
 #include "imgui.h"
 #include "imgui_impl_sdl2.h"
@@ -6,6 +8,7 @@
 #include <ctime>
 #include <random>
 
+// guess what it initializes dear imgui.
 void UI::initialize(SDL_Window *window, SDL_Renderer *renderer) {
 
   IMGUI_CHECKVERSION();
@@ -33,6 +36,7 @@ void UI::initialize(SDL_Window *window, SDL_Renderer *renderer) {
   initializeParticle(100, 4);
 }
 
+// stole from the imgui.h/cpp file
 static void HelpMarker(const char *desc) {
   ImGui::TextDisabled("(?)");
   if (ImGui::BeginItemTooltip()) {
@@ -43,6 +47,8 @@ static void HelpMarker(const char *desc) {
   }
 }
 
+// idk... don't fall for the name. It makes a slider for the provided
+// parameters.
 void UI::checkBool(int start, int end, const char *string) {
   if (numOfParticleColor >= end + 1) {
     ImGui::SliderFloat(string, &Force[start][end], -1, 1, "%.3f",
@@ -63,13 +69,17 @@ void UI::checkBoolMaxDist(int start, int end, const char *string) {
                      ImGuiSliderFlags_AlwaysClamp);
   }
 }
+
+// didn't find a better name. What it does is setup and run the imgui stuff.
 bool UI::setup() {
+
   ImGui_ImplSDLRenderer2_NewFrame();
   ImGui_ImplSDL2_NewFrame();
   ImGui::NewFrame();
 
   bool QUIT = false;
-  auto guiWidgetFlags = ImGuiSliderFlags_AlwaysClamp;
+  auto guiWidgetFlags =
+      ImGuiSliderFlags_AlwaysClamp; // i thought i'd use more flags.
   {
 
     ImGui::SetNextWindowPos(ImVec2(0, 0), ImGuiCond_Once);
@@ -79,11 +89,9 @@ bool UI::setup() {
                  ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove |
                      ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoDocking);
 
+    // idk why but wrapping it(window contents) with '{}' doesn't work.
     if (ImGui::Button("Quit?")) {
       QUIT = true;
-    }
-    if (ImGui::Button("Quit Demo?")) {
-      showDemoWindow = !showDemoWindow;
     }
     ImGui::SeparatorText("Global variables");
 
@@ -129,6 +137,13 @@ bool UI::setup() {
         resetForce();
       }
       ImGui::SameLine();
+      if (ImGui::Button("Minimise Force")) {
+        minimiseForce();
+      }
+      if (ImGui::Button("Maximise Force")) {
+        maximiseForce();
+      }
+      ImGui::SameLine();
       if (ImGui::Button("Default Force")) {
         setDefaultForce();
       }
@@ -157,8 +172,11 @@ bool UI::setup() {
           populateRandomMinDistance();
         }
         ImGui::SameLine();
-        if (ImGui::Button("Reset Min Dist")) {
-          resetMinDistance();
+        if (ImGui::Button("Minimise Min Dist")) {
+          minimiseMinDistance();
+        }
+        if (ImGui::Button("Maximise Min Distance")) {
+          maximiseMinDistance();
         }
         if (ImGui::Button("Default MinDist")) {
           setDefaultMinDistance();
@@ -186,8 +204,11 @@ bool UI::setup() {
           populateRandomMaxDistance();
         }
         ImGui::SameLine();
-        if (ImGui::Button("Reset Max Dist")) {
-          resetMaxDistance();
+        if (ImGui::Button("Minimise Max Dist")) {
+          minimiseMaxDistance();
+        }
+        if (ImGui::Button("Maximise Max Distance")) {
+          maximiseMaxDistance();
         }
         if (ImGui::Button("Default MaxDist")) {
           setDefaultMaxDistance();
@@ -236,6 +257,8 @@ void UI::update(SDL_Renderer *renderer, double DeltaTime) {
 
 void UI::setRadius(int Radius) { radius = Radius; }
 
+// why is the constructor in the middle of the screen?
+// because I am lazy.
 UI::UI(int Width, int Height) : width(Width), height(Height) {
   srand(time(NULL));
   defaultForce();
@@ -249,7 +272,6 @@ void UI::populateRandomForce() {
 
   std::uniform_real_distribution<> dis(-1.0, 1.0);
 
-  // Fill the array with random values
   for (int i = 0; i < 8; ++i) {
     for (int j = 0; j < 8; ++j) {
       Force[i][j] = dis(gen);
@@ -263,7 +285,6 @@ void UI::populateRandomMinDistance() {
 
   std::uniform_real_distribution<> dis(10, 30);
 
-  // Fill the array with random values
   for (int i = 0; i < 8; ++i) {
     for (int j = 0; j < 8; ++j) {
       minDist[i][j] = dis(gen);
@@ -277,7 +298,6 @@ void UI::populateRandomMaxDistance() {
 
   std::uniform_real_distribution<> dis(150, 300);
 
-  // Fill the array with random values
   for (int i = 0; i < 8; ++i) {
     for (int j = 0; j < 8; ++j) {
       maxDist[i][j] = dis(gen);
@@ -293,18 +313,50 @@ void UI::resetForce() {
   }
 }
 
-void UI::resetMinDistance() {
+void UI::minimiseForce() {
   for (int i = 0; i < 8; ++i) {
     for (int j = 0; j < 8; ++j) {
-      minDist[i][j] = 3;
+      Force[i][j] = -1.0f;
     }
   }
 }
 
-void UI::resetMaxDistance() {
+void UI::minimiseMinDistance() {
   for (int i = 0; i < 8; ++i) {
     for (int j = 0; j < 8; ++j) {
-      maxDist[i][j] = 200;
+      minDist[i][j] = 1;
+    }
+  }
+}
+
+void UI::minimiseMaxDistance() {
+  for (int i = 0; i < 8; ++i) {
+    for (int j = 0; j < 8; ++j) {
+      maxDist[i][j] = 150;
+    }
+  }
+}
+
+void UI::maximiseForce() {
+  for (int i = 0; i < 8; ++i) {
+    for (int j = 0; j < 8; ++j) {
+      Force[i][j] = 1.0f;
+    }
+  }
+}
+
+void UI::maximiseMinDistance() {
+  for (int i = 0; i < 8; ++i) {
+    for (int j = 0; j < 8; ++j) {
+      minDist[i][j] = 30;
+    }
+  }
+}
+
+void UI::maximiseMaxDistance() {
+  for (int i = 0; i < 8; ++i) {
+    for (int j = 0; j < 8; ++j) {
+      maxDist[i][j] = 300;
     }
   }
 }
@@ -392,6 +444,9 @@ void UI::renderParticle(SDL_Renderer *Renderer) {
   }
 }
 
+// the section below is responsible for making the treenodes. took help from
+// internet for most/all of this. and yeah I don't fully understand only this
+// part of my code. please explain if you do.
 void UI::createColorTreeNode(const char *label, int colorIndex) {
   if (numOfParticleColor >= colorIndex + 1) {
     if (ImGui::TreeNode(label)) {

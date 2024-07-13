@@ -30,8 +30,14 @@ public:
   void populateRandomMaxDistance();
 
   void resetForce();
-  void resetMinDistance();
-  void resetMaxDistance();
+
+  void minimiseForce();
+  void minimiseMinDistance();
+  void minimiseMaxDistance();
+
+  void maximiseForce();
+  void maximiseMinDistance();
+  void maximiseMaxDistance();
 
   void defaultForce();
   void defaultMinDistance();
@@ -61,7 +67,7 @@ private:
 
   double deltaTime;
 
-  // initial value
+  // initial values
   float defaultForceValue[COLOR_COUNT][COLOR_COUNT] = {
       // RED GREEN BLUE WHITE YELLOW PURPLE CYAN MAGENTA
 
