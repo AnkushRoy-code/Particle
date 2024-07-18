@@ -123,8 +123,40 @@ bool UI::setup() {
     if (ImGui::Button("Refresh")) {
       initializeParticle(particleCount, numOfParticleColor);
     }
-    ImGui::Checkbox("Show MinDist Control", &showMinDistControl);
-    ImGui::Checkbox("Show MaxDist Control", &showMaxDistControl);
+
+    if (!showSameMinDist) {
+      ImGui::Checkbox("Show MinDist Control", &showMinDistControl);
+      if (!showMinDistControl) {
+        ImGui::SameLine();
+      }
+    }
+    if (!showMinDistControl) {
+      ImGui::Checkbox("Same Min Width?##3", &showSameMinDist);
+    }
+
+    if (showSameMinDist) {
+      if (ImGui::SliderInt("Minimum dist", &sameMinDist, 1, 30, 0,
+                           guiWidgetFlags)) {
+        changeAllMin(sameMinDist);
+      }
+    }
+
+    if (!showSameMaxDist) {
+      ImGui::Checkbox("Show MaxDist Control", &showMaxDistControl);
+      if (!showMaxDistControl) {
+        ImGui::SameLine();
+      }
+    }
+    if (!showMaxDistControl) {
+      ImGui::Checkbox("Same Max Width?##3", &showSameMaxDist);
+    }
+
+    if (showSameMaxDist) {
+      if (ImGui::SliderInt("Maximum dist", &sameMaxDist, 150, 300, 0,
+                           guiWidgetFlags)) {
+        changeAllMax(sameMaxDist);
+      }
+    }
 
     // NOTE: force
     if (ImGui::CollapsingHeader("Focus Control")) {
@@ -405,6 +437,20 @@ void UI::setDefaultMaxDistance() {
   for (int i = 0; i < 8; ++i) {
     for (int j = 0; j < 8; ++j) {
       maxDist[i][j] = defaultMaxDistanceValue[i][j];
+    }
+  }
+}
+void UI::changeAllMin(int value) {
+  for (int i = 0; i < 8; ++i) {
+    for (int j = 0; j < 8; ++j) {
+      minDist[i][j] = value;
+    }
+  }
+}
+void UI::changeAllMax(int value) {
+  for (int i = 0; i < 8; ++i) {
+    for (int j = 0; j < 8; ++j) {
+      maxDist[i][j] = value;
     }
   }
 }

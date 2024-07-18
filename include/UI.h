@@ -55,6 +55,9 @@ public:
   void showMinDistSliders();
   void showMaxDistSliders();
 
+  void changeAllMin(int value);
+  void changeAllMax(int value);
+
 private:
   bool showDemoWindow = false;
   bool showMinDistControl = false;
@@ -88,6 +91,7 @@ private:
       {0.287f, -0.571f, 0.172f, 0.686f, -0.412f, 0.745f, -0.932f,
        0.073f} // MAGENTA
   };
+
   int defaultMinDistanceValue[COLOR_COUNT][COLOR_COUNT] = {
       // RED GREEN BLUE WHITE YELLOW PURPLE CYAN MAGENTA
 
@@ -114,6 +118,9 @@ private:
   };
 
   float Force[COLOR_COUNT][COLOR_COUNT];
+
+  bool showSameMinDist = false, showSameMaxDist = false;
+  int sameMinDist = 5, sameMaxDist = 250;
   int minDist[COLOR_COUNT][COLOR_COUNT];
   int maxDist[COLOR_COUNT][COLOR_COUNT];
 };
