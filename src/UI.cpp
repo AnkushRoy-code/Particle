@@ -131,7 +131,7 @@ bool UI::setup() {
       }
     }
     if (!showMinDistControl) {
-      ImGui::Checkbox("Same Min Width?##3", &showSameMinDist);
+      ImGui::Checkbox("Same Min Dist?##3", &showSameMinDist);
     }
 
     if (showSameMinDist) {
@@ -148,7 +148,7 @@ bool UI::setup() {
       }
     }
     if (!showMaxDistControl) {
-      ImGui::Checkbox("Same Max Width?##3", &showSameMaxDist);
+      ImGui::Checkbox("Same Max Dist?##3", &showSameMaxDist);
     }
 
     if (showSameMaxDist) {
