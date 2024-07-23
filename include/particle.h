@@ -16,16 +16,14 @@ public:
 
   float getPosX() const;
   float getPosY() const;
-  int getColor() const;
 
   void setForce(int ColorA, int ColorB, float Value);
-  // int getForce(int ColorA, int ColorB);
 
 private:
   float x, y, vx, vy;
   int color;
 
-  // Force setup
+  // Force/minDist/maxDist setup
   // Colors -> Red(0), Green(1), Blue(2), White(3),
   // Yellow(4), Purple(5), Cyan(6), Magenta(7)
 

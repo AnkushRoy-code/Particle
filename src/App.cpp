@@ -50,8 +50,6 @@ void calcDeltatime() {
 void App::update() {
   quit = ui.setup();
   ui.update(renderer, deltaTime);
-
-  // other things go here
 }
 
 void App::render() { SDL_RenderPresent(renderer); }
@@ -81,7 +79,6 @@ int App::RunEngine(App Engine) {
     }
 
     Engine.update();
-
     Engine.render();
   }
 

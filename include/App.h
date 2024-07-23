@@ -1,9 +1,11 @@
+// this is the main application file
+
 #pragma once
 
 #include <SDL.h>
 
-#include "SDLstuff.h"
-#include "UI.h"
+#include "SDLstuff.h" // for making window/renderer
+#include "UI.h" // all the ui stuff. This also includes the particle class for particle stuff.
 
 class App {
 private:
