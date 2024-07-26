@@ -2,20 +2,13 @@
 
 An engaging implementation of the Particle Life simulation using C++, SDL2, and Dear ImGui. Watch as particles interact and form complex patterns based on simple rules!
 
-## Features
-
-- Real-time particle simulation
-- Customizable particle properties
-- Interactive UI with Dear ImGui
-- Cross-platform compatibility (Windows, macOS, Linux)
-
 ## Prerequisites
 
 Before you begin, ensure you have the following installed:
 
 - C++ compiler (GCC, Clang, or MSVC)
 - CMake (version 3.10 or higher)
-- SDL2 library
+- SDL2 library (I tried my best to ship this by default in another branch Included-SDL2 but it doesn't work because of my lack of knowledge)
 - Git (optional, for cloning the repository)
 
 ## Building the Project
@@ -35,7 +28,7 @@ Generate the build files:
 
 Build the project:
 ```make```
-
+And hope you don't get any errors.
 
 ## Running the Simulation
 After building, you can run the simulation:

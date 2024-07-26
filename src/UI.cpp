@@ -1,12 +1,54 @@
 // this is the file I worked the most on.
 
 #include "UI.h"
+#include "color.h"
 #include "imgui.h"
 #include "imgui_impl_sdl2.h"
 #include "imgui_impl_sdlrenderer2.h"
 #include <SDL.h>
 #include <ctime>
 #include <random>
+
+//---------------------------------------------------------------------------
+// Local Functions/Values
+//---------------------------------------------------------------------------
+
+// stole from the imgui.h/cpp file
+static void HelpMarker(const char *desc) {
+  ImGui::TextDisabled("(?)");
+  if (ImGui::BeginItemTooltip()) {
+    ImGui::PushTextWrapPos(ImGui::GetFontSize() * 35.0f);
+    ImGui::TextUnformatted(desc);
+    ImGui::PopTextWrapPos();
+    ImGui::EndTooltip();
+  }
+}
+
+//---------------------------------------------------------------------------
+// Implementation Of Functions
+//---------------------------------------------------------------------------
+
+UI::UI(int Width, int Height) : width(Width), height(Height) {
+  srand(time(NULL));
+  defaultForce();
+  defaultMinDistance();
+  defaultMaxDistance();
+}
+
+void UI::initializeParticle(int ParticleCount, int NumOfParticleColor) {
+  std::random_device rd;
+  std::mt19937 gen(rd());
+  std::uniform_real_distribution<> disX(0, width);
+  std::uniform_real_distribution<> disY(0, height);
+  particles.clear();
+  for (int color = 0; color < NumOfParticleColor; color++) {
+    for (int m = 0; m < ParticleCount; m++) {
+      float x = disX(gen);
+      float y = disY(gen);
+      particles.emplace_back(x, y, color);
+    }
+  }
+}
 
 // guess what it initializes dear imgui.
 void UI::initialize(SDL_Window *window, SDL_Renderer *renderer) {
@@ -36,41 +78,6 @@ void UI::initialize(SDL_Window *window, SDL_Renderer *renderer) {
   initializeParticle(100, 4);
 }
 
-// stole from the imgui.h/cpp file
-static void HelpMarker(const char *desc) {
-  ImGui::TextDisabled("(?)");
-  if (ImGui::BeginItemTooltip()) {
-    ImGui::PushTextWrapPos(ImGui::GetFontSize() * 35.0f);
-    ImGui::TextUnformatted(desc);
-    ImGui::PopTextWrapPos();
-    ImGui::EndTooltip();
-  }
-}
-
-// idk... don't fall for the name. It makes a slider for the provided
-// parameters.
-void UI::checkBool(int start, int end, const char *string) {
-  if (numOfParticleColor >= end + 1) {
-    ImGui::SliderFloat(string, &Force[start][end], -1, 1, "%.3f",
-                       ImGuiSliderFlags_AlwaysClamp);
-  }
-}
-
-void UI::checkBoolMinDist(int start, int end, const char *string) {
-  if (numOfParticleColor >= end + 1) {
-    ImGui::SliderInt(string, &minDist[start][end], 1, 30, "%d",
-                     ImGuiSliderFlags_AlwaysClamp);
-  }
-}
-
-void UI::checkBoolMaxDist(int start, int end, const char *string) {
-  if (numOfParticleColor >= end + 1) {
-    ImGui::SliderInt(string, &maxDist[start][end], 150, 300, "%d",
-                     ImGuiSliderFlags_AlwaysClamp);
-  }
-}
-
-// didn't find a better name. What it does is setup and run the imgui stuff.
 bool UI::setup() {
 
   ImGui_ImplSDLRenderer2_NewFrame();
@@ -273,6 +280,7 @@ void UI::close() {
   ImGui::DestroyContext();
 }
 
+// didn't find a better name. What it does is setup and run the imgui stuff.
 void UI::update(SDL_Renderer *renderer, double DeltaTime) {
 
   ImGuiIO &io = ImGui::GetIO();
@@ -287,15 +295,49 @@ void UI::update(SDL_Renderer *renderer, double DeltaTime) {
   renderParticle(renderer);
 }
 
+void UI::updateParticle(double DeltaTime) {
+  for (auto &particle : particles) {
+    particle.update(particles, width, height, DeltaTime, Force, minDist,
+                    maxDist);
+  }
+}
+
+const std::vector<particle> &UI::getParticles() const { return particles; }
+
+void UI::renderParticle(SDL_Renderer *Renderer) {
+  const auto &particles = getParticles();
+  for (const auto &particle : particles) {
+    if (radius > 1) {
+      particle.drawParticle(Renderer, radius);
+    } else {
+      particle.drawParticlePoint(Renderer);
+    }
+  }
+}
+
 void UI::setRadius(int Radius) { radius = Radius; }
 
-// why is the constructor in the middle of the screen?
-// because I am lazy.
-UI::UI(int Width, int Height) : width(Width), height(Height) {
-  srand(time(NULL));
-  defaultForce();
-  defaultMinDistance();
-  defaultMaxDistance();
+// idk... don't fall for the name. It makes a slider for the provided
+// parameters.
+void UI::checkBool(int start, int end, const char *string) {
+  if (numOfParticleColor >= end + 1) {
+    ImGui::SliderFloat(string, &Force[start][end], -1, 1, "%.3f",
+                       ImGuiSliderFlags_AlwaysClamp);
+  }
+}
+
+void UI::checkBoolMinDist(int start, int end, const char *string) {
+  if (numOfParticleColor >= end + 1) {
+    ImGui::SliderInt(string, &minDist[start][end], 1, 30, "%d",
+                     ImGuiSliderFlags_AlwaysClamp);
+  }
+}
+
+void UI::checkBoolMaxDist(int start, int end, const char *string) {
+  if (numOfParticleColor >= end + 1) {
+    ImGui::SliderInt(string, &maxDist[start][end], 150, 300, "%d",
+                     ImGuiSliderFlags_AlwaysClamp);
+  }
 }
 
 void UI::populateRandomForce() {
@@ -440,6 +482,7 @@ void UI::setDefaultMaxDistance() {
     }
   }
 }
+
 void UI::changeAllMin(int value) {
   for (int i = 0; i < 8; ++i) {
     for (int j = 0; j < 8; ++j) {
@@ -451,41 +494,6 @@ void UI::changeAllMax(int value) {
   for (int i = 0; i < 8; ++i) {
     for (int j = 0; j < 8; ++j) {
       maxDist[i][j] = value;
-    }
-  }
-}
-
-void UI::initializeParticle(int ParticleCount, int NumOfParticleColor) {
-  std::random_device rd;
-  std::mt19937 gen(rd());
-  std::uniform_real_distribution<> disX(0, width);
-  std::uniform_real_distribution<> disY(0, height);
-  particles.clear();
-  for (int color = 0; color < NumOfParticleColor; color++) {
-    for (int m = 0; m < ParticleCount; m++) {
-      float x = disX(gen);
-      float y = disY(gen);
-      particles.emplace_back(x, y, color);
-    }
-  }
-}
-
-void UI::updateParticle(double DeltaTime) {
-  for (auto &particle : particles) {
-    particle.update(particles, width, height, DeltaTime, Force, minDist,
-                    maxDist);
-  }
-}
-
-const std::vector<particle> &UI::getParticles() const { return particles; }
-
-void UI::renderParticle(SDL_Renderer *Renderer) {
-  const auto &particles = getParticles();
-  for (const auto &particle : particles) {
-    if (radius > 1) {
-      particle.drawParticle(Renderer, radius);
-    } else {
-      particle.drawParticlePoint(Renderer);
     }
   }
 }
