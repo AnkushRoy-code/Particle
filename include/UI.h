@@ -47,6 +47,9 @@ public:
   void setDefaultMinDistance();
   void setDefaultMaxDistance();
 
+  void changeAllMin(int value);
+  void changeAllMax(int value);
+
   void createColorTreeNode(const char *label, int colorIndex);
   void createMinDistTreeNode(const char *label, int colorIndex);
   void createMaxDistTreeNode(const char *label, int colorIndex);
@@ -54,9 +57,6 @@ public:
   void showColorSliders();
   void showMinDistSliders();
   void showMaxDistSliders();
-
-  void changeAllMin(int value);
-  void changeAllMax(int value);
 
 private:
   bool showDemoWindow = false;

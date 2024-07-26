@@ -7,6 +7,32 @@
 
 #include "imgui_impl_sdl2.h"
 
+//---------------------------------------------------------------------------
+//  Local Things
+//---------------------------------------------------------------------------
+
+// These are for deltaTime
+Uint64 currentTick = SDL_GetPerformanceFrequency();
+Uint64 lastTick = 0;
+double deltaTime = 0;
+
+// These are for capping fps because my monitor doesn't even support more
+// than 60.
+const int FPS = 60;
+const int frameDelay = 1000 / FPS;
+Uint32 frameStart;
+int frameTime;
+
+void calcDeltatime() {
+  lastTick = currentTick;
+  currentTick = SDL_GetPerformanceCounter();
+  deltaTime = (double)((currentTick - lastTick) * 1000 /
+                       (double)SDL_GetPerformanceFrequency());
+}
+
+//---------------------------------------------------------------------------
+// Implementation Of functions
+//---------------------------------------------------------------------------
 bool App::initialize() {
 
   sdlStuff.initialise(window, renderer);
@@ -26,25 +52,6 @@ bool App::initialize() {
   ui.initialize(window, renderer);
   // IDK how to check if imgui was successfully initialised.
   return true;
-}
-
-// These are for deltaTime
-Uint64 currentTick = SDL_GetPerformanceFrequency();
-Uint64 lastTick = 0;
-double deltaTime = 0;
-
-// These are for capping fps because my monitor doesn't even support more
-// than 60.
-const int FPS = 60;
-const int frameDelay = 1000 / FPS;
-Uint32 frameStart;
-int frameTime;
-
-void calcDeltatime() {
-  lastTick = currentTick;
-  currentTick = SDL_GetPerformanceCounter();
-  deltaTime = (double)((currentTick - lastTick) * 1000 /
-                       (double)SDL_GetPerformanceFrequency());
 }
 
 void App::update() {

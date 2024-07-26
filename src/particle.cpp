@@ -3,12 +3,13 @@
 #include <SDL.h>
 #include <SDL_timer.h>
 
+//---------------------------------------------------------------------------
+// Local Values
+//---------------------------------------------------------------------------
+
 // this is the width of the control pannel every particle is displaced this
 // amount of distance to the right of the screen so they don't overlap.
 const int DISPLACE = 360;
-
-particle::particle(float x, float y, int color)
-    : x(x), y(y), vx(0), vy(0), color(color) {}
 
 const SDL_Color ColorMap[COLOR_COUNT] = {
     {255, 0, 0, 255},     // RED
@@ -20,6 +21,11 @@ const SDL_Color ColorMap[COLOR_COUNT] = {
     {70, 240, 240, 255},  // CYAN
     {240, 50, 230, 255}   // MAGENTA
 };
+//---------------------------------------------------------------------------
+// Implementation Of Functions
+//---------------------------------------------------------------------------
+particle::particle(float x, float y, int color)
+    : x(x), y(y), vx(0), vy(0), color(color) {}
 
 // for particle radius > 1 calculate the rect wrt particle position and then
 // render the rect.
@@ -103,6 +109,13 @@ void particle::update(const std::vector<particle> &Particles, float Width,
   wrapAround(Width, Height);
 }
 
+// i wonder what they do ...
+float particle::getPosX() const { return x; }
+float particle::getPosY() const { return y; }
+void particle::setForce(int ColorA, int ColorB, float Value) {
+  force[ColorA][ColorB] = Value;
+}
+
 // calculate the particle rect size.
 SDL_Rect particle::calcParticleSize(int Radius) const {
   SDL_Rect rect;
@@ -134,11 +147,3 @@ void particle::wrapAround(float Width, float Height) {
     y -= Height;
   }
 }
-
-void particle::setForce(int ColorA, int ColorB, float Value) {
-  force[ColorA][ColorB] = Value;
-}
-
-// i wonder what they do ...
-float particle::getPosX() const { return x; }
-float particle::getPosY() const { return y; }

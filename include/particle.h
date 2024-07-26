@@ -7,6 +7,7 @@
 class particle {
 public:
   particle(float X, float Y, int Color);
+
   void drawParticle(SDL_Renderer *Renderer, int Radius) const;
   void drawParticlePoint(SDL_Renderer *Renderer) const;
   void update(const std::vector<particle> &Particles, float Width, float Height,
