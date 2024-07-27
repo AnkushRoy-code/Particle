@@ -49,7 +49,10 @@ bool App::initialize() {
     return false;
   }
 
-  ui.initialize(window, renderer);
+  int h, w;
+  SDL_GetWindowSize(window, &w, &h);
+
+  ui.initialize(window, renderer, w, h);
   // IDK how to check if imgui was successfully initialised.
   return true;
 }

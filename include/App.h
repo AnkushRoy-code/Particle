@@ -18,7 +18,7 @@ private:
   bool quit = false;
 
 public:
-  App() : window(nullptr), renderer(nullptr), ui(720, 720) {}
+  App() : window(nullptr), renderer(nullptr) {}
 
 public:
   bool initialize();

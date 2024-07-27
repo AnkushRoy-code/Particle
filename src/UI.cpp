@@ -28,7 +28,7 @@ static void HelpMarker(const char *desc) {
 // Implementation Of Functions
 //---------------------------------------------------------------------------
 
-UI::UI(int Width, int Height) : width(Width), height(Height) {
+UI::UI() {
   srand(time(NULL));
   defaultForce();
   defaultMinDistance();
@@ -51,7 +51,13 @@ void UI::initializeParticle(int ParticleCount, int NumOfParticleColor) {
 }
 
 // guess what it initializes dear imgui.
-void UI::initialize(SDL_Window *window, SDL_Renderer *renderer) {
+void UI::initialize(SDL_Window *window, SDL_Renderer *renderer, int Width,
+                    int Height) {
+
+  // width is subtracted by 360 because that is the absolute width of the imgui
+  // window
+  width = Width - 360;
+  height = Height;
 
   IMGUI_CHECKVERSION();
   ImGui::CreateContext();
@@ -90,7 +96,7 @@ bool UI::setup() {
   {
 
     ImGui::SetNextWindowPos(ImVec2(0, 0), ImGuiCond_Once);
-    ImGui::SetNextWindowSize(ImVec2(360, 720), ImGuiCond_Once);
+    ImGui::SetNextWindowSize(ImVec2(360, height), ImGuiCond_Once);
 
     ImGui::Begin("Control Panel", NULL,
                  ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove |
