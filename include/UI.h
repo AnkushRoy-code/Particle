@@ -8,9 +8,10 @@
 
 class UI {
 public:
-  UI(int Width, int Height);
+  UI();
   void initializeParticle(int ParticleCount, int NumOfParticleColor);
-  void initialize(SDL_Window *window, SDL_Renderer *renderer);
+  void initialize(SDL_Window *window, SDL_Renderer *renderer, int Width,
+                  int Height);
   bool setup();
   void close();
   void update(SDL_Renderer *renderer, double DeltaTime);
