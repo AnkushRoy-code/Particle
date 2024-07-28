@@ -52,3 +52,5 @@ On macOS/Linux:
 ```bash
 ./particle
 ```
+## Usage
+For detailed usage instructions, refer to the [Usage Guide](./Usage.md).
