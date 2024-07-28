@@ -3,8 +3,22 @@ project(particle)
 
 set(CMAKE_CXX_STANDARD 11)
 include_directories(include libs/imgui)
+
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
-find_package(SDL2 REQUIRED)
+
+option(ParticleVendored "Use vendored libraries" ON)
+
+if(ParticleVendored)
+    add_subdirectory(libs/SDL2-2.30.4 EXCLUDE_FROM_ALL)
+else()
+    # 1. Look for a SDL2 package, 2. look for the SDL2 component and 3. fail if none can be found
+    find_package(SDL2 REQUIRED CONFIG REQUIRED COMPONENTS SDL2)
+
+    # 1. Look for a SDL2 package, 2. Look for the SDL2maincomponent and 3. DO NOT fail when SDL2main is not available
+    find_package(SDL2 REQUIRED CONFIG COMPONENTS SDL2main)
+endif()
+
+# find_package(SDL2 REQUIRED)
 
 set(SOURCES
     src/main.cpp
