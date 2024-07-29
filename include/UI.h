@@ -12,7 +12,7 @@ public:
   void initializeParticle(int ParticleCount, int NumOfParticleColor);
   void initialize(SDL_Window *window, SDL_Renderer *renderer, int Width,
                   int Height);
-  bool setup();
+  void setup();
   void close();
   void update(SDL_Renderer *renderer, double DeltaTime);
   void updateParticle(double DeltaTime);

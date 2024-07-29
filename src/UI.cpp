@@ -84,13 +84,12 @@ void UI::initialize(SDL_Window *window, SDL_Renderer *renderer, int Width,
   initializeParticle(100, 4);
 }
 
-bool UI::setup() {
+void UI::setup() {
 
   ImGui_ImplSDLRenderer2_NewFrame();
   ImGui_ImplSDL2_NewFrame();
   ImGui::NewFrame();
 
-  bool QUIT = false;
   auto guiWidgetFlags =
       ImGuiSliderFlags_AlwaysClamp; // i thought i'd use more flags.
   {
@@ -103,9 +102,6 @@ bool UI::setup() {
                      ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoDocking);
 
     // idk why but wrapping it(window contents) with '{}' doesn't work.
-    if (ImGui::Button("Quit?")) {
-      QUIT = true;
-    }
     ImGui::SeparatorText("Global variables");
 
     ImGui::SliderInt("Radius", &radius, 0, 10, 0, guiWidgetFlags);
@@ -277,7 +273,6 @@ bool UI::setup() {
   if (showDemoWindow) {
     ImGui::ShowDemoWindow(&showDemoWindow);
   }
-  return QUIT;
 }
 
 void UI::close() {
