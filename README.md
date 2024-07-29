@@ -53,4 +53,4 @@ On macOS/Linux:
 ./particle
 ```
 ## Usage
-For detailed usage instructions, refer to the [Usage Guide](./Usage.md).
+For detailed usage instructions, refer to the [Usage Guide](./USAGE.md).

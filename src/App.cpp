@@ -60,6 +60,11 @@ bool App::initialize() {
 void App::update() {
   quit = ui.setup();
   ui.update(renderer, deltaTime);
+
+  int h, w;
+  SDL_GetWindowSize(window, &w, &h);
+
+  ui.setSize(w, h);
 }
 
 void App::render() { SDL_RenderPresent(renderer); }
@@ -100,10 +105,10 @@ int App::RunEngine(App Engine) {
   Engine.close();
 
   if (Engine.window != nullptr) {
-    std::cout << "wtf W";
+    std::cout << "Window failed to close";
   }
   if (Engine.renderer != nullptr) {
-    std::cout << "wtf R";
+    std::cout << "Renderer failed to close";
   }
 
   return 0;

@@ -96,7 +96,7 @@ bool UI::setup() {
   {
 
     ImGui::SetNextWindowPos(ImVec2(0, 0), ImGuiCond_Once);
-    ImGui::SetNextWindowSize(ImVec2(360, height), ImGuiCond_Once);
+    ImGui::SetNextWindowSize(ImVec2(360, height), 0);
 
     ImGui::Begin("Control Panel", NULL,
                  ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove |
@@ -303,7 +303,7 @@ void UI::update(SDL_Renderer *renderer, double DeltaTime) {
 
 void UI::updateParticle(double DeltaTime) {
   for (auto &particle : particles) {
-    particle.update(particles, width, height, DeltaTime, Force, minDist,
+    particle.update(particles, width - 360, height, DeltaTime, Force, minDist,
                     maxDist);
   }
 }
@@ -487,6 +487,11 @@ void UI::setDefaultMaxDistance() {
       maxDist[i][j] = defaultMaxDistanceValue[i][j];
     }
   }
+}
+
+void UI::setSize(int Width, int Height) {
+  width = Width;
+  height = Height;
 }
 
 void UI::changeAllMin(int value) {

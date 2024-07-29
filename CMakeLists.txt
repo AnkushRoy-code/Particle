@@ -37,4 +37,12 @@ set(SOURCES
 
 add_executable(particle ${SOURCES})
 target_link_libraries(particle SDL2::SDL2 SDL2::SDL2main)
-target_compile_options(particle PRIVATE -Wall -O3 -ffast-math -Wextra -pedantic)
+
+if (CMAKE_SYSTEM_NAME STREQUAL "Windows")
+  target_compile_options(particle PRIVATE -Wall -O3 -ffast-math)
+elseif (CMAKE_SYSTEM_NAME STREQUAL "Linux")
+  target_compile_options(particle PRIVATE -Wall -O3 -ffast-math -Wextra -pedantic)
+elseif (CMAKE_SYSTEM_NAME STREQUAL "Darwin")
+  target_compile_options(particle PRIVATE -Wall -O3 -ffast-math -Wextra -pedantic)
+endif()
+
