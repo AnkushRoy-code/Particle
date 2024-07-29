@@ -21,6 +21,7 @@ public:
 
   void renderParticle(SDL_Renderer *Renderer);
   void setRadius(int Radius);
+  void setSize(int Width, int Height);
 
   void checkBool(int start, int end, const char *string);
   void checkBoolMinDist(int start, int end, const char *string);
