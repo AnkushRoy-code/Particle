@@ -2,9 +2,6 @@
 
 ## Features Overview
 
-### Menu Options
-- **Quit Button:** Closes the application.
-
 ### Global Variables
 - **Radius:** Adjust the Radius of the particles using the slider.
 - **Particle Count:** Adjust the number of particles using the slider. Changes take effect once you release the slider. The minimum number of particles is 10, and the maximum is 1000.
