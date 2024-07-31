@@ -54,9 +54,7 @@ void UI::initializeParticle(int ParticleCount, int NumOfParticleColor) {
 void UI::initialize(SDL_Window *window, SDL_Renderer *renderer, int Width,
                     int Height) {
 
-  // width is subtracted by 360 because that is the absolute width of the imgui
-  // window
-  width = Width - 360;
+  width = Width - ImGuiWindowWidth;
   height = Height;
 
   IMGUI_CHECKVERSION();
@@ -95,11 +93,15 @@ void UI::setup() {
   {
 
     ImGui::SetNextWindowPos(ImVec2(0, 0), ImGuiCond_Once);
-    ImGui::SetNextWindowSize(ImVec2(360, height), 0);
+    ImGui::SetNextWindowSize(ImVec2(360, height),
+                             ImGuiCond_Once); // initial size
+    ImGui::SetNextWindowSizeConstraints(ImVec2(320, height),
+                                        ImVec2(500, height), 0, 0);
 
     ImGui::Begin("Control Panel", NULL,
-                 ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove |
-                     ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoDocking);
+                 ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoCollapse);
+
+    ImGuiWindowWidth = ImGui::GetWindowWidth();
 
     // idk why but wrapping it(window contents) with '{}' doesn't work.
     ImGui::SeparatorText("Global variables");
@@ -298,8 +300,8 @@ void UI::update(SDL_Renderer *renderer, double DeltaTime) {
 
 void UI::updateParticle(double DeltaTime) {
   for (auto &particle : particles) {
-    particle.update(particles, width - 360, height, DeltaTime, Force, minDist,
-                    maxDist);
+    particle.update(particles, width - ImGuiWindowWidth, height, DeltaTime,
+                    Force, minDist, maxDist, ImGuiWindowWidth);
   }
 }
 

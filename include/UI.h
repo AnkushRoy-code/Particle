@@ -65,6 +65,7 @@ private:
   bool showMinDistControl = false;
   bool showMaxDistControl = false;
   int width, height;
+  int ImGuiWindowWidth = 360;
 
   int radius = 3;
   int particleCount = 100, numOfParticleColor = 4;

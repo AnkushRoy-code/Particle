@@ -9,7 +9,6 @@
 
 // this is the width of the control pannel every particle is displaced this
 // amount of distance to the right of the screen so they don't overlap.
-const int DISPLACE = 360;
 
 const SDL_Color ColorMap[COLOR_COUNT] = {
     {255, 0, 0, 255},     // RED
@@ -43,7 +42,7 @@ void particle::drawParticle(SDL_Renderer *Renderer, int Radius) const {
 void particle::drawParticlePoint(SDL_Renderer *Renderer) const {
   SDL_Color col = ColorMap[color];
   SDL_SetRenderDrawColor(Renderer, col.r, col.g, col.b, col.a);
-  SDL_RenderDrawPoint(Renderer, x + DISPLACE, y);
+  SDL_RenderDrawPoint(Renderer, x + private_ImGuiWindowWidth, y);
 }
 
 // this is the main logic of the particle simulation.
@@ -51,8 +50,10 @@ void particle::update(const std::vector<particle> &Particles, float Width,
                       float Height, double deltaTime,
                       float Force[COLOR_COUNT][COLOR_COUNT],
                       int MinDistance[COLOR_COUNT][COLOR_COUNT],
-                      int MaxDistance[COLOR_COUNT][COLOR_COUNT]) {
+                      int MaxDistance[COLOR_COUNT][COLOR_COUNT],
+                      int ImGuiWindowWidth) {
 
+  private_ImGuiWindowWidth = ImGuiWindowWidth;
   for (const auto &other : Particles) {
     // skip calculating force with itself.
     if (&other == this)
@@ -112,21 +113,20 @@ void particle::update(const std::vector<particle> &Particles, float Width,
 // i wonder what they do ...
 float particle::getPosX() const { return x; }
 float particle::getPosY() const { return y; }
-void particle::setForce(int ColorA, int ColorB, float Value) {
-  force[ColorA][ColorB] = Value;
-}
 
 // calculate the particle rect size.
 SDL_Rect particle::calcParticleSize(int Radius) const {
   SDL_Rect rect;
   if (Radius == 1) {
-    rect.x = static_cast<int>(x) + DISPLACE;
+    rect.x = static_cast<int>(x) + private_ImGuiWindowWidth;
     rect.y = static_cast<int>(y);
   } else if (Radius % 2 == 0) {
-    rect.x = (static_cast<int>(x) - ((Radius / 2) - 1)) + DISPLACE;
+    rect.x =
+        (static_cast<int>(x) - ((Radius / 2) - 1)) + private_ImGuiWindowWidth;
     rect.y = static_cast<int>(y) + ((Radius / 2) - 1);
   } else {
-    rect.x = (static_cast<int>(x) - ((Radius - 1) / 2)) + DISPLACE;
+    rect.x =
+        (static_cast<int>(x) - ((Radius - 1) / 2)) + private_ImGuiWindowWidth;
     rect.y = static_cast<int>(y) + ((Radius - 1) / 2);
   }
   rect.h = rect.w = Radius;

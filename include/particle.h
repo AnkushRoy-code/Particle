@@ -13,16 +13,15 @@ public:
   void update(const std::vector<particle> &Particles, float Width, float Height,
               double deltaTime, float Force[COLOR_COUNT][COLOR_COUNT],
               int MinDist[COLOR_COUNT][COLOR_COUNT],
-              int MaxDist[COLOR_COUNT][COLOR_COUNT]);
+              int MaxDist[COLOR_COUNT][COLOR_COUNT], int ImGuiWindowWidth);
 
   float getPosX() const;
   float getPosY() const;
 
-  void setForce(int ColorA, int ColorB, float Value);
-
 private:
   float x, y, vx, vy;
   int color;
+  int private_ImGuiWindowWidth = 360;
 
   // Force/minDist/maxDist setup
   // Colors -> Red(0), Green(1), Blue(2), White(3),
