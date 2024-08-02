@@ -1,3 +1,5 @@
+I'm currently porting the whole project to OpenGL, it'll take some time due to my lack of OpenGL knowledge and my device only supporting OpenGL2. So there will be fewer commits in this branch and I'll not push the OpenGL branch until it's completed.
+
 # Particle Life Simulation
 
 An engaging implementation of the Particle Life simulation using C++, SDL2, and Dear ImGui. Watch as particles interact and form complex patterns based on simple rules!
