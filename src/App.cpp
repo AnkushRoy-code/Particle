@@ -87,10 +87,10 @@ int App::RunEngine(App Engine) {
     calcDeltatime();
 
     while (SDL_PollEvent(&event) != 0) {
+      ImGui_ImplSDL2_ProcessEvent(&event);
       if (event.type == SDL_QUIT) {
         Engine.quit = !Engine.quit;
       }
-      ImGui_ImplSDL2_ProcessEvent(&event);
     }
 
     Engine.update();

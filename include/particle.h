@@ -13,10 +13,15 @@ public:
   void update(const std::vector<particle> &Particles, float Width, float Height,
               double deltaTime, float Force[COLOR_COUNT][COLOR_COUNT],
               int MinDist[COLOR_COUNT][COLOR_COUNT],
-              int MaxDist[COLOR_COUNT][COLOR_COUNT], int ImGuiWindowWidth);
+              int MaxDist[COLOR_COUNT][COLOR_COUNT], int ImGuiWindowWidth,
+              bool Wrap);
 
   float getPosX() const;
   float getPosY() const;
+  void setPos(int X, int Y) {
+    x = X;
+    y = Y;
+  }
 
 private:
   float x, y, vx, vy;
@@ -34,4 +39,5 @@ private:
 private:
   SDL_Rect calcParticleSize(int Radius) const;
   void wrapAround(float Width, float Height);
+  void dontWrapAround(float Width, float Height);
 };

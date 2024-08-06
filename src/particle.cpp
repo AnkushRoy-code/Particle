@@ -51,7 +51,7 @@ void particle::update(const std::vector<particle> &Particles, float Width,
                       float Force[COLOR_COUNT][COLOR_COUNT],
                       int MinDistance[COLOR_COUNT][COLOR_COUNT],
                       int MaxDistance[COLOR_COUNT][COLOR_COUNT],
-                      int ImGuiWindowWidth) {
+                      int ImGuiWindowWidth, bool Wrap) {
 
   private_ImGuiWindowWidth = ImGuiWindowWidth;
   for (const auto &other : Particles) {
@@ -65,17 +65,19 @@ void particle::update(const std::vector<particle> &Particles, float Width,
     // these 4 if statements are so that the particle force wrap around. Not the
     // particle itself. There's another function that does it later in this same
     // function.
-    if (dx > 0.5 * Width) {
-      dx = dx - Width;
-    }
-    if (dx < -0.5 * Width) {
-      dx = dx + Width;
-    }
-    if (dy > 0.5 * Height) {
-      dy = dy - Height;
-    }
-    if (dy < -0.5 * Height) {
-      dy = dy + Height;
+    if (Wrap) {
+      if (dx > 0.5 * Width) {
+        dx = dx - Width;
+      }
+      if (dx < -0.5 * Width) {
+        dx = dx + Width;
+      }
+      if (dy > 0.5 * Height) {
+        dy = dy - Height;
+      }
+      if (dy < -0.5 * Height) {
+        dy = dy + Height;
+      }
     }
 
     // calculate distance between the 2 particles.
@@ -107,7 +109,11 @@ void particle::update(const std::vector<particle> &Particles, float Width,
   vy *= 0.95f;
 
   // this wrap arounds the particle position itself if it goes out of bounds.
-  wrapAround(Width, Height);
+  if (Wrap) {
+    wrapAround(Width, Height);
+  } else {
+    dontWrapAround(Width, Height);
+  }
 }
 
 // i wonder what they do ...
@@ -136,14 +142,25 @@ SDL_Rect particle::calcParticleSize(int Radius) const {
 void particle::wrapAround(float Width, float Height) {
   if (x < 0) {
     x += Width;
-  }
-  if (x >= Width) {
+  } else if (x >= Width) {
     x -= Width;
   }
   if (y < 0) {
     y += Height;
-  }
-  if (y >= Height) {
+  } else if (y >= Height) {
     y -= Height;
+  }
+}
+
+void particle::dontWrapAround(float Width, float Height) {
+  if (x < 0) {
+    x = 0;
+  } else if (x > Width - 2) {
+    x = Width - 2;
+  }
+  if (y < 0) {
+    y = 0;
+  } else if (y > Height - 4) {
+    y = Height - 4;
   }
 }
