@@ -18,6 +18,7 @@ else()
     find_package(SDL2 REQUIRED CONFIG COMPONENTS SDL2main)
 endif()
 
+find_package(OpenMP REQUIRED)
 # find_package(SDL2 REQUIRED)
 
 set(SOURCES
@@ -36,7 +37,7 @@ set(SOURCES
 )
 
 add_executable(particle ${SOURCES})
-target_link_libraries(particle SDL2::SDL2 SDL2::SDL2main)
+target_link_libraries(particle SDL2::SDL2 SDL2::SDL2main OpenMP::OpenMP_CXX)
 
 if (CMAKE_SYSTEM_NAME STREQUAL "Windows")
   target_compile_options(particle PRIVATE -Wall -O3 -ffast-math)

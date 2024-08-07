@@ -3,6 +3,7 @@
 #include <SDL.h>
 #include <SDL_timer.h>
 #include <cmath>
+#include <omp.h>
 
 //---------------------------------------------------------------------------
 // Local Values
@@ -48,6 +49,11 @@ void particle::update(const std::vector<particle> &Particles, float Width,
                       int ImGuiWindowWidth, bool Wrap) {
 
   pImGuiWindowWidth = ImGuiWindowWidth;
+
+  float halfWidth = 0.5f * Width;
+  float halfHeight = 0.5f * Height;
+
+#pragma omp parallel for
   for (const auto &other : Particles) {
     // skip calculating force with itself.
     if (&other == this)
@@ -60,17 +66,16 @@ void particle::update(const std::vector<particle> &Particles, float Width,
     // particle itself. There's another function that does it later in this same
     // function.
     if (Wrap) {
-      if (dx > 0.5 * Width) {
-        dx = dx - Width;
+      if (dx > halfWidth) {
+        dx -= Width;
+      } else if (dx < -halfWidth) {
+        dx += Width;
       }
-      if (dx < -0.5 * Width) {
-        dx = dx + Width;
-      }
-      if (dy > 0.5 * Height) {
-        dy = dy - Height;
-      }
-      if (dy < -0.5 * Height) {
-        dy = dy + Height;
+
+      if (dy > halfHeight) {
+        dy -= Height;
+      } else if (dy < -halfHeight) {
+        dy += Height;
       }
     }
 
@@ -88,8 +93,9 @@ void particle::update(const std::vector<particle> &Particles, float Width,
       force = Force[color][other.color];
     }
 
-    float fx = force * (dx / (1.2 * distance));
-    float fy = force * (dy / (1.2 * distance));
+    float invDistance = 1.2f * distance;
+    float fx = force * (dx / invDistance);
+    float fy = force * (dy / invDistance);
 
     vx += fx;
     vy += fy;
