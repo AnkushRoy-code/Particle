@@ -29,14 +29,13 @@ particle::particle(float x, float y, int color)
 
 // for particle radius > 1 calculate the rect wrt particle position and then
 // render the rect.
-void particle::drawParticle(SDL_Renderer *Renderer, int Radius,
-                            float Scale) const {
+void particle::drawParticle(SDL_Renderer *Renderer, int Radius, float Scale,
+                            float OffSetX, float OffSetY) const {
   SDL_Color col = ColorMap[color];
   SDL_SetRenderDrawColor(Renderer, col.r, col.g, col.b, col.a);
 
-  SDL_Rect rect = calcParticleSize(
-      Radius,
-      Scale); // a very special magical formulae I made to calculating rect.
+  // a very special magical formulae I made to calculating rect.
+  SDL_Rect rect = calcParticleSize(Radius, Scale, OffSetX, OffSetY);
   SDL_RenderFillRect(Renderer, &rect);
 }
 
@@ -116,17 +115,18 @@ float particle::getPosX() const { return x; }
 float particle::getPosY() const { return y; }
 
 // calculate the particle rect size.
-SDL_Rect particle::calcParticleSize(int Radius, float Scale) const {
+SDL_Rect particle::calcParticleSize(int Radius, float Scale, float OffSetX,
+                                    float OffSetY) const {
   SDL_Rect rect;
   if (Radius % 2 == 0) {
     // x or y - r*s/2 -1
-    rect.x =
-        static_cast<int>(x * Scale) - ((Radius / 2) - 1) + pImGuiWindowWidth;
-    rect.y = static_cast<int>(y * Scale) + ((Radius / 2) - 1);
+    rect.x = static_cast<int>((x * Scale) + OffSetX) - ((Radius / 2) - 1) +
+             pImGuiWindowWidth;
+    rect.y = static_cast<int>((y * Scale) + OffSetY) + ((Radius / 2) - 1);
   } else {
-    rect.x =
-        (static_cast<int>(x * Scale) - ((Radius - 1) / 2)) + pImGuiWindowWidth;
-    rect.y = static_cast<int>(y * Scale) + ((Radius - 1) / 2);
+    rect.x = (static_cast<int>((x * Scale) + OffSetX) - ((Radius - 1) / 2)) +
+             pImGuiWindowWidth;
+    rect.y = static_cast<int>((y * Scale) + OffSetY) + ((Radius - 1) / 2);
   }
 
   if (static_cast<int>(Radius * Scale) <= 0) {

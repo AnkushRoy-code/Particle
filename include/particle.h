@@ -8,7 +8,8 @@ class particle {
 public:
   particle(float X, float Y, int Color);
 
-  void drawParticle(SDL_Renderer *Renderer, int Radius, float Scale) const;
+  void drawParticle(SDL_Renderer *Renderer, int Radius, float Scale,
+                    float OffSetX, float OffSetY) const;
   void update(const std::vector<particle> &Particles, float Width, float Height,
               double deltaTime, float Force[COLOR_COUNT][COLOR_COUNT],
               int MinDist[COLOR_COUNT][COLOR_COUNT],
@@ -36,7 +37,8 @@ private:
   int maxDist[COLOR_COUNT][COLOR_COUNT];
 
 private:
-  SDL_Rect calcParticleSize(int Radius, float Scale) const;
+  SDL_Rect calcParticleSize(int Radius, float Scale, float OffSetX,
+                            float OffSetY) const;
   void wrapAround(float Width, float Height);
   void dontWrapAround(float Width, float Height);
 };

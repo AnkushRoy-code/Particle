@@ -14,10 +14,12 @@ public:
                   int Height);
   void setup();
   void close();
-  void update(SDL_Renderer *renderer, double DeltaTime, float Scale);
+  void update(SDL_Renderer *renderer, double DeltaTime, float Scale,
+              float OffSetX, float OffSetY);
   void updateParticle(double DeltaTime);
   const std::vector<particle> &getParticles() const;
-  void renderParticle(SDL_Renderer *Renderer, float Scale);
+  void renderParticle(SDL_Renderer *Renderer, float Scale, float OffSetX,
+                      float OffSetY);
   void setRadius(int Radius);
   void setSize(int Width, int Height);
 
@@ -26,8 +28,13 @@ private:
   void createMinDistTreeNode(const char *label, int colorIndex);
   void createMaxDistTreeNode(const char *label, int colorIndex);
   void showColorSliders();
+  void showGlobalVariables();
+  void showForce();
+  void showMaxDist();
+  void showMinDist();
   void showMinDistSliders();
   void showMaxDistSliders();
+  void showMenuBar();
   void populateRandomForce();
   void populateRandomMinDistance();
   void populateRandomMaxDistance();
@@ -60,7 +67,7 @@ private:
   int sameMinDist = 5;
   int sameMaxDist = 250;
   double deltaTime;
-  bool showDemoWindow = false;
+  bool showDemoWindow = true;
   bool showMinDistControl = false;
   bool showMaxDistControl = false;
   bool showSameMinDist = false;

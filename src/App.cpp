@@ -57,9 +57,9 @@ bool App::initialize() {
   return true;
 }
 
-void App::update(float Scale) {
+void App::update(float Scale, float offSetX, float offSetY) {
   ui.setup();
-  ui.update(renderer, deltaTime, Scale);
+  ui.update(renderer, deltaTime, Scale, offSetX, offSetY);
 
   int h, w;
   SDL_GetWindowSize(window, &w, &h);
@@ -80,7 +80,11 @@ int App::RunEngine(App Engine) {
     return 1;
   }
 
-  static float scale = 1.0f;
+  float offsetX = 0.0f, offsetY = 0.0f;
+  float offsetEndX = 0.0f, offsetEndY = 0.0f;
+  float mouseStartPanX = 0.0f, mouseStartPanY = 0.0f;
+  float scale = 1.0f;
+  bool middleMouseButtonPressed = false;
   SDL_Event event;
 
   while (!Engine.quit) {
@@ -97,10 +101,42 @@ int App::RunEngine(App Engine) {
         } else if (event.wheel.y < 0) {
           scale *= 0.95f;
         }
+      } else if (event.type == SDL_MOUSEBUTTONDOWN) {
+        if (event.button.button == SDL_BUTTON_MIDDLE) {
+          middleMouseButtonPressed = true;
+          int x, y;
+          SDL_GetMouseState(&x, &y);
+
+          mouseStartPanX = x / scale;
+          mouseStartPanY = y / scale;
+        }
+      } else if (event.type == SDL_MOUSEBUTTONUP) {
+        if (event.button.button == SDL_BUTTON_MIDDLE) {
+          middleMouseButtonPressed = false;
+          offsetEndX = offsetX;
+          offsetEndY = offsetY;
+        }
       }
     }
 
-    Engine.update(scale);
+    if (middleMouseButtonPressed) {
+      int x, y;
+      SDL_GetMouseState(&x, &y); // Get current mouse position
+
+      offsetY = offsetEndY + ((y / scale) - mouseStartPanY);
+      offsetX = offsetEndX + ((x / scale) - mouseStartPanX);
+    }
+
+    // cap scale value
+    if (scale < 1.05f && scale > 0.95) {
+      scale = 1;
+    } else if (scale >= 5.0f) {
+      scale = 5.0f;
+    } else if (scale <= 0.5f) {
+      scale = 0.5f;
+    }
+
+    Engine.update(scale, offsetX, offsetY);
     Engine.render();
   }
 

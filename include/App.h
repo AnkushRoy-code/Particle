@@ -21,10 +21,12 @@ public:
   App() : window(nullptr), renderer(nullptr) {}
 
 public:
+  int RunEngine(App engine);
+
+private:
   bool initialize();
-  void update(float Scale);
+  void update(float Scale, float offSetX, float offSetY);
   void render();
   void close();
   void Quit() { quit = true; }
-  int RunEngine(App engine);
 };
