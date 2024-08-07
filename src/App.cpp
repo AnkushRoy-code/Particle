@@ -116,6 +116,24 @@ int App::RunEngine(App Engine) {
           offsetEndX = offsetX;
           offsetEndY = offsetY;
         }
+      } else if (event.type == SDL_KEYDOWN) {
+
+        switch (event.key.keysym.sym) {
+
+        case SDLK_m:
+          offsetY = 0.0f;
+          offsetX = 0.0f;
+          offsetEndY = 0.0f;
+          offsetEndX = 0.0f;
+          break;
+
+        case SDLK_z:
+          scale = 1.0f;
+          break;
+
+        default:
+          break;
+        }
       }
     }
 
