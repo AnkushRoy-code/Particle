@@ -57,9 +57,9 @@ bool App::initialize() {
   return true;
 }
 
-void App::update() {
+void App::update(float Scale) {
   ui.setup();
-  ui.update(renderer, deltaTime);
+  ui.update(renderer, deltaTime, Scale);
 
   int h, w;
   SDL_GetWindowSize(window, &w, &h);
@@ -80,6 +80,7 @@ int App::RunEngine(App Engine) {
     return 1;
   }
 
+  static float scale = 1.0f;
   SDL_Event event;
 
   while (!Engine.quit) {
@@ -90,10 +91,16 @@ int App::RunEngine(App Engine) {
       ImGui_ImplSDL2_ProcessEvent(&event);
       if (event.type == SDL_QUIT) {
         Engine.quit = !Engine.quit;
+      } else if (event.type == SDL_MOUSEWHEEL) {
+        if (event.wheel.y > 0) {
+          scale *= 1.05f;
+        } else if (event.wheel.y < 0) {
+          scale *= 0.95f;
+        }
       }
     }
 
-    Engine.update();
+    Engine.update(scale);
     Engine.render();
   }
 

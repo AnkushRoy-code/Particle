@@ -22,7 +22,7 @@ public:
 
 public:
   bool initialize();
-  void update();
+  void update(float Scale);
   void render();
   void close();
   void Quit() { quit = true; }

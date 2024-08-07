@@ -2,6 +2,7 @@
 #include "color.h"
 #include <SDL.h>
 #include <SDL_timer.h>
+#include <cmath>
 
 //---------------------------------------------------------------------------
 // Local Values
@@ -28,21 +29,15 @@ particle::particle(float x, float y, int color)
 
 // for particle radius > 1 calculate the rect wrt particle position and then
 // render the rect.
-void particle::drawParticle(SDL_Renderer *Renderer, int Radius) const {
+void particle::drawParticle(SDL_Renderer *Renderer, int Radius,
+                            float Scale) const {
   SDL_Color col = ColorMap[color];
   SDL_SetRenderDrawColor(Renderer, col.r, col.g, col.b, col.a);
 
   SDL_Rect rect = calcParticleSize(
-      Radius); // a very special magical formulae I made to calculating rect.
+      Radius,
+      Scale); // a very special magical formulae I made to calculating rect.
   SDL_RenderFillRect(Renderer, &rect);
-}
-
-// for particles with radius < 1 just draw a point instead of calculating the
-// rect and then rendering it.
-void particle::drawParticlePoint(SDL_Renderer *Renderer) const {
-  SDL_Color col = ColorMap[color];
-  SDL_SetRenderDrawColor(Renderer, col.r, col.g, col.b, col.a);
-  SDL_RenderDrawPoint(Renderer, x + private_ImGuiWindowWidth, y);
 }
 
 // this is the main logic of the particle simulation.
@@ -53,7 +48,7 @@ void particle::update(const std::vector<particle> &Particles, float Width,
                       int MaxDistance[COLOR_COUNT][COLOR_COUNT],
                       int ImGuiWindowWidth, bool Wrap) {
 
-  private_ImGuiWindowWidth = ImGuiWindowWidth;
+  pImGuiWindowWidth = ImGuiWindowWidth;
   for (const auto &other : Particles) {
     // skip calculating force with itself.
     if (&other == this)
@@ -121,21 +116,24 @@ float particle::getPosX() const { return x; }
 float particle::getPosY() const { return y; }
 
 // calculate the particle rect size.
-SDL_Rect particle::calcParticleSize(int Radius) const {
+SDL_Rect particle::calcParticleSize(int Radius, float Scale) const {
   SDL_Rect rect;
-  if (Radius == 1) {
-    rect.x = static_cast<int>(x) + private_ImGuiWindowWidth;
-    rect.y = static_cast<int>(y);
-  } else if (Radius % 2 == 0) {
+  if (Radius % 2 == 0) {
+    // x or y - r*s/2 -1
     rect.x =
-        (static_cast<int>(x) - ((Radius / 2) - 1)) + private_ImGuiWindowWidth;
-    rect.y = static_cast<int>(y) + ((Radius / 2) - 1);
+        static_cast<int>(x * Scale) - ((Radius / 2) - 1) + pImGuiWindowWidth;
+    rect.y = static_cast<int>(y * Scale) + ((Radius / 2) - 1);
   } else {
     rect.x =
-        (static_cast<int>(x) - ((Radius - 1) / 2)) + private_ImGuiWindowWidth;
-    rect.y = static_cast<int>(y) + ((Radius - 1) / 2);
+        (static_cast<int>(x * Scale) - ((Radius - 1) / 2)) + pImGuiWindowWidth;
+    rect.y = static_cast<int>(y * Scale) + ((Radius - 1) / 2);
   }
-  rect.h = rect.w = Radius;
+
+  if (static_cast<int>(Radius * Scale) <= 0) {
+    rect.h = rect.w = 1;
+  } else {
+    rect.h = rect.w = static_cast<int>(Radius * Scale);
+  }
   return rect;
 }
 

@@ -158,7 +158,7 @@ void UI::setup() {
 
     ImGui::SeparatorText("Global variables");
 
-    ImGui::SliderInt("Radius", &radius, 0, 10, 0, guiWidgetFlags);
+    ImGui::SliderInt("Radius", &radius, 1, 10, 0, guiWidgetFlags);
 
     ImGui::Text("Particle Count");
     ImGui::PushID(1);
@@ -347,7 +347,7 @@ void UI::close() {
 }
 
 // didn't find a better name. What it does is setup and run the imgui stuff.
-void UI::update(SDL_Renderer *renderer, double DeltaTime) {
+void UI::update(SDL_Renderer *renderer, double DeltaTime, float Scale) {
 
   ImGuiIO &io = ImGui::GetIO();
   ImGui::Render();
@@ -358,7 +358,7 @@ void UI::update(SDL_Renderer *renderer, double DeltaTime) {
   ImGui_ImplSDLRenderer2_RenderDrawData(ImGui::GetDrawData(), renderer);
 
   updateParticle(DeltaTime / 1000);
-  renderParticle(renderer);
+  renderParticle(renderer, Scale);
 }
 
 void UI::updateParticle(double DeltaTime) {
@@ -370,14 +370,10 @@ void UI::updateParticle(double DeltaTime) {
 
 const std::vector<particle> &UI::getParticles() const { return particles; }
 
-void UI::renderParticle(SDL_Renderer *Renderer) {
+void UI::renderParticle(SDL_Renderer *Renderer, float Scale) {
   const auto &particles = getParticles();
   for (const auto &particle : particles) {
-    if (radius > 1) {
-      particle.drawParticle(Renderer, radius);
-    } else {
-      particle.drawParticlePoint(Renderer);
-    }
+    particle.drawParticle(Renderer, radius, Scale);
   }
 }
 

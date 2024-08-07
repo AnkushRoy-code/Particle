@@ -14,10 +14,10 @@ public:
                   int Height);
   void setup();
   void close();
-  void update(SDL_Renderer *renderer, double DeltaTime);
+  void update(SDL_Renderer *renderer, double DeltaTime, float Scale);
   void updateParticle(double DeltaTime);
   const std::vector<particle> &getParticles() const;
-  void renderParticle(SDL_Renderer *Renderer);
+  void renderParticle(SDL_Renderer *Renderer, float Scale);
   void setRadius(int Radius);
   void setSize(int Width, int Height);
 
