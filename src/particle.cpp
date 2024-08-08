@@ -3,7 +3,6 @@
 #include <SDL.h>
 #include <SDL_timer.h>
 #include <cmath>
-#include <omp.h>
 
 //---------------------------------------------------------------------------
 // Local Values
@@ -53,7 +52,6 @@ void particle::update(const std::vector<particle> &Particles, float Width,
   float halfWidth = 0.5f * Width;
   float halfHeight = 0.5f * Height;
 
-#pragma omp parallel for
   for (const auto &other : Particles) {
     // skip calculating force with itself.
     if (&other == this)
