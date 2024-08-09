@@ -1,6 +1,7 @@
 #pragma once
 
-enum Color {
+enum Color
+{
   RED,
   GREEN,
   BLUE,

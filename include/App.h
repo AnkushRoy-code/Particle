@@ -2,18 +2,19 @@
 
 #pragma once
 
+#include "SDLstuff.h"  // for making window/renderer
+#include "UI.h"  // all the ui stuff. This also includes the particle class for particle stuff.
+
 #include <SDL.h>
 
-#include "SDLstuff.h" // for making window/renderer
-#include "UI.h" // all the ui stuff. This also includes the particle class for particle stuff.
-
-class App {
+class App
+{
 private:
-  SDL_Window *window;
+  SDL_Window   *window;
   SDL_Renderer *renderer;
 
-  UI ui;
   SDLStuff sdlStuff;
+  UI       ui;
 
   bool quit = false;
 

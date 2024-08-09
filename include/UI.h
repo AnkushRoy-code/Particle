@@ -2,24 +2,39 @@
 
 #include "color.h"
 #include "particle.h"
+
 #include <SDL.h>
 #include <imgui.h>
 #include <vector>
 
-class UI {
+class UI
+{
 public:
   UI();
   void initializeParticle(int ParticleCount, int NumOfParticleColor);
-  void initialize(SDL_Window *window, SDL_Renderer *renderer, int Width,
+  void initialize(SDL_Window *window,
+                  SDL_Renderer *renderer,
+                  int Width,
                   int Height);
+
   void setup();
   void close();
-  void update(SDL_Renderer *renderer, double DeltaTime, float Scale,
-              float OffSetX, float OffSetY);
+
+  void update(SDL_Renderer *renderer,
+              double DeltaTime,
+              float Scale,
+              float OffSetX,
+              float OffSetY);
+
   void updateParticle(double DeltaTime);
+
   const std::vector<particle> &getParticles() const;
-  void renderParticle(SDL_Renderer *Renderer, float Scale, float OffSetX,
+
+  void renderParticle(SDL_Renderer *Renderer,
+                      float Scale,
+                      float OffSetX,
                       float OffSetY);
+
   void setRadius(int Radius);
   void setSize(int Width, int Height);
 
@@ -60,19 +75,19 @@ private:
 private:
   int width;
   int height;
-  int radius = 3;
-  int particleCount = 100;
-  int numOfParticleColor = 4;
-  int ImGuiWindowWidth = 360;
-  int sameMinDist = 5;
-  int sameMaxDist = 250;
-  double deltaTime;
-  bool showDemoWindow = true;
+  int radius              = 3;
+  int particleCount       = 100;
+  int numOfParticleColor  = 4;
+  int ImGuiWindowWidth    = 360;
+  int sameMinDist         = 5;
+  int sameMaxDist         = 250;
+  bool showDemoWindow     = true;
   bool showMinDistControl = false;
   bool showMaxDistControl = false;
-  bool showSameMinDist = false;
-  bool showSameMaxDist = false;
-  bool wrap = true;
+  bool showSameMinDist    = false;
+  bool showSameMaxDist    = false;
+  bool wrap               = true;
+  double deltaTime;
   float Force[COLOR_COUNT][COLOR_COUNT];
   int minDist[COLOR_COUNT][COLOR_COUNT];
   int maxDist[COLOR_COUNT][COLOR_COUNT];
