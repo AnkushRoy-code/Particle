@@ -1,4 +1,6 @@
-I'm currently porting the whole project to OpenGL, it'll take some time due to my lack of OpenGL knowledge and my device only supporting OpenGL2. So there will be fewer commits in this branch and I'll not push the OpenGL branch until it's completed.
+~I'm currently porting the whole project to OpenGL, it'll take some time due to my lack of OpenGL knowledge and my device only supporting OpenGL2. So there will be fewer commits in this branch and I'll not push the OpenGL branch until it's completed.~
+
+I tried a lot but was ran into lot of problems. I'd say it's skill issue. I will start with making simple applications in OpenGL and then try to port it later. Exams are near and I have a big backlog to cover, JEE is also after two years. So there'll not be any updates here anymore before my JEE, only until I get bored studying Chemistry.
 
 # Particle Life Simulation
 
