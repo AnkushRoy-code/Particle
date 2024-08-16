@@ -94,9 +94,23 @@ void App::processEvents(SDL_Event &event,
     {
         ImGui_ImplSDL2_ProcessEvent(&event);
 
+        // Always process keyboard and exit events
+        if (event.type == SDL_KEYDOWN)
+        {
+            handleKeyDown(event, scale, offsetX, offsetY, offsetEndX,
+                          offsetEndY);
+        }
+        else if (event.type == SDL_QUIT) { quit = true; }
+
+        // Skip handling mouse events if ImGui window or item is hovered
+        if (ImGui::IsWindowHovered(ImGuiHoveredFlags_AnyWindow)
+            || ImGui::IsAnyItemHovered())
+        {
+            continue;
+        }
+
         switch (event.type)
         {
-            case SDL_QUIT: quit = true; break;
 
             case SDL_MOUSEWHEEL: adjustScale(event, scale); break;
 
@@ -108,11 +122,6 @@ void App::processEvents(SDL_Event &event,
             case SDL_MOUSEBUTTONUP:
                 handleMouseButtonUp(event, middleMouseButtonPressed, offsetX,
                                     offsetY, offsetEndX, offsetEndY);
-                break;
-
-            case SDL_KEYDOWN:
-                handleKeyDown(event, scale, offsetX, offsetY, offsetEndX,
-                              offsetEndY);
                 break;
 
             default: break;
