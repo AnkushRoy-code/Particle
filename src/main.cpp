@@ -5,9 +5,9 @@
 // those. IDK what the norm is i did what I thought was right.
 int main()
 {
-  App app;
+    App app;
 
-  app.RunEngine(app);
+    app.RunEngine(app);
 
-  return 0;
+    return 0;
 }

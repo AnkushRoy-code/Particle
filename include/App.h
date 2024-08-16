@@ -9,25 +9,63 @@
 
 class App
 {
-private:
-  SDL_Window   *window;
-  SDL_Renderer *renderer;
+  private:
+    SDL_Window *window;
+    SDL_Renderer *renderer;
 
-  SDLStuff sdlStuff;
-  UI       ui;
+    SDLStuff sdlStuff;
+    UI ui;
 
-  bool quit = false;
+    bool quit = false;
 
-public:
-  App() : window(nullptr), renderer(nullptr) {}
+  public:
+    App() : window(nullptr), renderer(nullptr) {}
 
-public:
-  int RunEngine(App engine);
+  public:
+    int RunEngine(App engine);
 
-private:
-  bool initialize();
-  void update(float Scale, float offSetX, float offSetY);
-  void render();
-  void close();
-  void Quit() { quit = true; }
+  private:
+    bool initialize();
+    void update(float Scale, float offSetX, float offSetY);
+    void processEvents(SDL_Event &event,
+                       float &scale,
+                       bool &middleMouseButtonPressed,
+                       float &mouseStartPanX,
+                       float &mouseStartPanY,
+                       float &offsetX,
+                       float &offsetY,
+                       float &offsetEndX,
+                       float &offsetEndY,
+                       bool &quit);
+    void adjustScale(const SDL_Event &event, float &scale);
+    void handleMouseButtonDown(const SDL_Event &event,
+                               bool &middleMouseButtonPressed,
+                               float &mouseStartPanX,
+                               float &mouseStartPanY,
+                               float scale);
+    void handleMouseButtonUp(const SDL_Event &event,
+                             bool &middleMouseButtonPressed,
+                             float &offsetX,
+                             float &offsetY,
+                             float &offsetEndX,
+                             float &offsetEndY);
+    void handleKeyDown(const SDL_Event &event,
+                       float &scale,
+                       float &offsetX,
+                       float &offsetY,
+                       float &offsetEndX,
+                       float &offsetEndY);
+    void handleMouseMotion(bool middleMouseButtonPressed,
+                           float scale,
+                           float mouseStartPanX,
+                           float mouseStartPanY,
+                           float &offsetX,
+                           float &offsetY,
+                           float &offsetEndX,
+                           float &offsetEndY);
+    void clampScale(float &scale);
+    void finalizeFrame();
+    void render();
+    void close();
+    void Quit() { quit = true; }
 };

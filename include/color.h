@@ -2,13 +2,13 @@
 
 enum Color
 {
-  RED,
-  GREEN,
-  BLUE,
-  WHITE,
-  YELLOW,
-  PURPLE,
-  CYAN,
-  MAGENTA,
-  COLOR_COUNT
+    RED,
+    GREEN,
+    BLUE,
+    WHITE,
+    YELLOW,
+    PURPLE,
+    CYAN,
+    MAGENTA,
+    COLOR_COUNT
 };
