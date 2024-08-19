@@ -36,16 +36,16 @@ void calcDeltatime()
 //---------------------------------------------------------------------------
 bool App::initialize()
 {
-    sdlStuff.initialise(window, renderer);
+    m_SDLStuff.initialise(m_window, m_renderer);
 
-    if (window == nullptr)
+    if (m_window == nullptr)
     {
         std::cerr << "Window could not be created! SDL Error: "
                   << SDL_GetError() << std::endl;
         return false;
     }
 
-    if (renderer == nullptr)
+    if (m_renderer == nullptr)
     {
         std::cerr << "Renderer could not be created! SDL Error: "
                   << SDL_GetError() << std::endl;
@@ -53,30 +53,30 @@ bool App::initialize()
     }
 
     int h, w;
-    SDL_GetWindowSize(window, &w, &h);
+    SDL_GetWindowSize(m_window, &w, &h);
 
-    ui.initialize(window, renderer, w, h);
+    m_UI.initialize(m_window, m_renderer, w, h);
     // IDK how to check if imgui was successfully initialised.
     return true;
 }
 
 void App::update(float Scale, float offSetX, float offSetY)
 {
-    ui.setup();
-    ui.update(renderer, deltaTime, Scale, offSetX, offSetY);
+    m_UI.setup();
+    m_UI.update(m_renderer, deltaTime, Scale, offSetX, offSetY);
 
     int h, w;
-    SDL_GetWindowSize(window, &w, &h);
+    SDL_GetWindowSize(m_window, &w, &h);
 
-    ui.setSize(w, h);
+    m_UI.setSize(w, h);
 }
 
-void App::render() { SDL_RenderPresent(renderer); }
+void App::render() { SDL_RenderPresent(m_renderer); }
 
 void App::close()
 {
-    ui.close();
-    sdlStuff.close(window, renderer);
+    m_UI.close();
+    m_SDLStuff.close(m_window, m_renderer);
 }
 
 void App::processEvents(SDL_Event &event,
@@ -235,14 +235,14 @@ int App::RunEngine(App Engine)
     bool middleMouseButtonPressed = false;
     SDL_Event event;
 
-    while (!Engine.quit)
+    while (!Engine.m_quit)
     {
         frameStart = SDL_GetTicks();
         calcDeltatime();
 
         processEvents(event, scale, middleMouseButtonPressed, mouseStartPanX,
                       mouseStartPanY, offsetX, offsetY, offsetEndX, offsetEndY,
-                      Engine.quit);
+                      Engine.m_quit);
         handleMouseMotion(middleMouseButtonPressed, scale, mouseStartPanX,
                           mouseStartPanY, offsetX, offsetY, offsetEndX,
                           offsetEndY);
@@ -259,8 +259,11 @@ int App::RunEngine(App Engine)
 
     Engine.close();
 
-    if (Engine.window != nullptr) { std::cout << "Window failed to close"; }
-    if (Engine.renderer != nullptr) { std::cout << "Renderer failed to close"; }
+    if (Engine.m_window != nullptr) { std::cout << "Window failed to close"; }
+    if (Engine.m_renderer != nullptr)
+    {
+        std::cout << "Renderer failed to close";
+    }
 
     return 0;
 }

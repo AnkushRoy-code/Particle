@@ -9,5 +9,6 @@ class SDLStuff
     void close(SDL_Window *&window, SDL_Renderer *&renderer);
 
   private:
-    const int WIDTH = 1080, HEIGHT = 720;
+    const int m_WIDTH  = 1080;
+    const int m_HEIGHT = 720;
 };

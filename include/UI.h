@@ -80,25 +80,25 @@ class UI
     void checkBoolMaxDist(int start, int end, const char *string);
 
   private:
-    int width;
-    int height;
-    int radius              = 3;
-    int particleCount       = 100;
-    int numOfParticleColor  = 4;
-    int ImGuiWindowWidth    = 360;
-    int sameMinDist         = 5;
-    int sameMaxDist         = 250;
-    bool showDemoWindow     = false;
-    bool showMinDistControl = false;
-    bool showMaxDistControl = false;
-    bool showSameMinDist    = false;
-    bool showSameMaxDist    = false;
-    bool wrap               = true;
-    double deltaTime;
-    float Force[COLOR_COUNT][COLOR_COUNT];
-    int minDist[COLOR_COUNT][COLOR_COUNT];
-    int maxDist[COLOR_COUNT][COLOR_COUNT];
-    std::vector<particle> particles;
+    int m_width;
+    int m_height;
+    int m_radius              = 3;
+    int m_particleCount       = 100;
+    int m_numOfParticleColor  = 4;
+    int m_ImGuiWindowWidth    = 360;
+    int m_sameMinDist         = 5;
+    int m_sameMaxDist         = 250;
+    bool m_showDemoWindow     = false;
+    bool m_showMinDistControl = false;
+    bool m_showMaxDistControl = false;
+    bool m_showSameMinDist    = false;
+    bool m_showSameMaxDist    = false;
+    bool m_wrap               = true;
+    double m_deltaTime;
+    float m_Force[COLOR_COUNT][COLOR_COUNT];
+    int m_minDist[COLOR_COUNT][COLOR_COUNT];
+    int m_maxDist[COLOR_COUNT][COLOR_COUNT];
+    std::vector<particle> m_particles;
 
     // initial values
     static const float defaultForceValue[COLOR_COUNT][COLOR_COUNT];

@@ -10,16 +10,16 @@
 class App
 {
   private:
-    SDL_Window *window;
-    SDL_Renderer *renderer;
+    SDL_Window *m_window;
+    SDL_Renderer *m_renderer;
 
-    SDLStuff sdlStuff;
-    UI ui;
+    SDLStuff m_SDLStuff;
+    UI m_UI;
 
-    bool quit = false;
+    bool m_quit = false;
 
   public:
-    App() : window(nullptr), renderer(nullptr) {}
+    App() : m_window(nullptr), m_renderer(nullptr) {}
 
   public:
     int RunEngine(App engine);
@@ -67,5 +67,5 @@ class App
     void finalizeFrame();
     void render();
     void close();
-    void Quit() { quit = true; }
+    void Quit() { m_quit = true; }
 };

@@ -27,7 +27,7 @@ const SDL_Color ColorMap[COLOR_COUNT] = {
 // Implementation Of Functions
 //---------------------------------------------------------------------------
 particle::particle(float x, float y, int color) :
-    x(x), y(y), vx(0), vy(0), color(color)
+    m_x(x), m_y(y), m_vx(0), m_vy(0), m_color(color)
 {
 }
 
@@ -39,7 +39,7 @@ void particle::drawParticle(SDL_Renderer *Renderer,
                             float OffSetX,
                             float OffSetY) const
 {
-    SDL_Color col = ColorMap[color];
+    SDL_Color col = ColorMap[m_color];
     SDL_SetRenderDrawColor(Renderer, col.r, col.g, col.b, col.a);
 
     // a very special magical formulae I made to calculating rect.
@@ -47,7 +47,11 @@ void particle::drawParticle(SDL_Renderer *Renderer,
     SDL_RenderFillRect(Renderer, &rect);
 }
 
-// this is the main logic of the particle simulation.
+// this is the main logic of the particle simulation. This.... this function has
+// the most maths/Physics that I implemented in this project, I knew the logic
+// that I had to put here by other people that had made it or showcased it. But
+// imblementating what I know in cpp was not as easy as it seemed, this function
+// went through a lot of changes throughout the days.
 void particle::update(const std::vector<particle> &Particles,
                       float Width,
                       float Height,
@@ -58,7 +62,7 @@ void particle::update(const std::vector<particle> &Particles,
                       int ImGuiWindowWidth,
                       bool Wrap)
 {
-    pImGuiWindowWidth = ImGuiWindowWidth;
+    m_ImGuiWindowWidth = ImGuiWindowWidth;
 
     float halfWidth  = 0.5f * Width;
     float halfHeight = 0.5f * Height;
@@ -68,8 +72,8 @@ void particle::update(const std::vector<particle> &Particles,
         // skip calculating force with itself.
         if (&other == this) continue;
 
-        float dx = other.getPosX() - x;
-        float dy = other.getPosY() - y;
+        float dx = other.getPosX() - m_x;
+        float dy = other.getPosY() - m_y;
 
         // these 4 if statements are so that the particle force wrap around. Not
         // the particle itself. There's another function that does it later in
@@ -91,26 +95,26 @@ void particle::update(const std::vector<particle> &Particles,
         float force = 0.0f;
 
         // the user sets the min/max distances
-        if (distance < MinDistance[color][other.color]) { force = -1.0f; }
-        else if (distance <= MaxDistance[color][other.color])
+        if (distance < MinDistance[m_color][other.m_color]) { force = -1.0f; }
+        else if (distance <= MaxDistance[m_color][other.m_color])
         {
-            force = Force[color][other.color];
+            force = Force[m_color][other.m_color];
         }
 
         float invDistance = 1.2f * distance;
         float fx          = force * (dx / invDistance);
         float fy          = force * (dy / invDistance);
 
-        vx += fx;
-        vy += fy;
+        m_vx += fx;
+        m_vy += fy;
     }
 
     // you gotta multiply everyting with deltaTime.
-    x += vx * deltaTime;
-    y += vy * deltaTime;
+    m_x += m_vx * deltaTime;
+    m_y += m_vy * deltaTime;
 
-    vx *= 0.95f;
-    vy *= 0.95f;
+    m_vx *= 0.95f;
+    m_vy *= 0.95f;
 
     // this wrap arounds the particle position itself if it goes out of bounds.
     if (Wrap) { wrapAround(Width, Height); }
@@ -118,8 +122,8 @@ void particle::update(const std::vector<particle> &Particles,
 }
 
 // i wonder what they do ...
-float particle::getPosX() const { return x; }
-float particle::getPosY() const { return y; }
+float particle::getPosX() const { return m_x; }
+float particle::getPosY() const { return m_y; }
 
 // calculate the particle rect size.
 SDL_Rect particle::calcParticleSize(int Radius,
@@ -131,15 +135,16 @@ SDL_Rect particle::calcParticleSize(int Radius,
     if (Radius % 2 == 0)
     {
         // x or y - r*s/2 -1
-        rect.x = static_cast<int>((x * Scale) + OffSetX) - ((Radius / 2) - 1)
-                 + pImGuiWindowWidth;
-        rect.y = static_cast<int>((y * Scale) + OffSetY) + ((Radius / 2) - 1);
+        rect.x = static_cast<int>((m_x * Scale) + OffSetX) - ((Radius / 2) - 1)
+                 + m_ImGuiWindowWidth;
+        rect.y = static_cast<int>((m_y * Scale) + OffSetY) + ((Radius / 2) - 1);
     }
     else
     {
-        rect.x = (static_cast<int>((x * Scale) + OffSetX) - ((Radius - 1) / 2))
-                 + pImGuiWindowWidth;
-        rect.y = static_cast<int>((y * Scale) + OffSetY) + ((Radius - 1) / 2);
+        rect.x =
+            (static_cast<int>((m_x * Scale) + OffSetX) - ((Radius - 1) / 2))
+            + m_ImGuiWindowWidth;
+        rect.y = static_cast<int>((m_y * Scale) + OffSetY) + ((Radius - 1) / 2);
     }
 
     if (static_cast<int>(Radius * Scale) <= 0) { rect.h = rect.w = 1; }
@@ -149,16 +154,16 @@ SDL_Rect particle::calcParticleSize(int Radius,
 
 void particle::wrapAround(float Width, float Height)
 {
-    if (x < 0) { x += Width; }
-    else if (x >= Width) { x -= Width; }
-    if (y < 0) { y += Height; }
-    else if (y >= Height) { y -= Height; }
+    if (m_x < 0) { m_x += Width; }
+    else if (m_x >= Width) { m_x -= Width; }
+    if (m_y < 0) { m_y += Height; }
+    else if (m_y >= Height) { m_y -= Height; }
 }
 
 void particle::dontWrapAround(float Width, float Height)
 {
-    if (x < 0) { x = 0; }
-    else if (x > Width - 2) { x = Width - 2; }
-    if (y < 0) { y = 0; }
-    else if (y > Height - 4) { y = Height - 4; }
+    if (m_x < 0) { m_x = 0; }
+    else if (m_x > Width - 2) { m_x = Width - 2; }
+    if (m_y < 0) { m_y = 0; }
+    else if (m_y > Height - 4) { m_y = Height - 4; }
 }
