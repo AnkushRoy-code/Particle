@@ -1,43 +1,56 @@
-# Usage Guide - Particle Simulation
+# 🎮 Usage Guide - Particle Simulation 🎮
 
-## Features Overview
+**TL;DR:** smashing the "Random Forces" under the Force control section might be all that you need (My goto move). If you're into fine-tuning, explore the sliders.
 
-### Global Variables
-- **Radius:** Adjust the Radius of the particles using the slider.
-- **Particle Count:** Adjust the number of particles using the slider. Changes take effect once you release the slider. The minimum number of particles is 10, and the maximum is 1000.
-- **Types Of Color:** Adjust the types/colors of particles using the slider. Changes take effect once you release the slider. The minimum number of particle types/colors is 2, and the maximum is 8.
-- **Refresh:** Refreshes the simulation with the current settings.
+Welcome to the Particle Simulation! Here's how to get the most out of your simulation experience.
 
-### Distance Controls
-- **Show MinDist Control:** Displays a foldable section to set the minimum distance for each particle type/color.
-- **Same Min Dist:** Sets the minimum distance for all particle types/colors to the same value using a slider. The minimum value is 1 and the maximum is 30.
-- **Show MaxDist Control:** Displays a foldable section to set the maximum distance for each particle type/color.
-- **Same Max Dist:** Sets the maximum distance for all particle types/colors to the same value using a slider. The minimum value is 150 and the maximum is 300.
+## 🚀 Features Overview
 
-### Focus Control Settings
-- **Buttons:**
-  - **Random Forces:** Sets random forces for each particle type/color.
-  - **Reset Forces:** Resets the forces for each particle type/color to 0.
-  - **Minimise Force:** Sets the forces for each particle type/color to -1.
-  - **Maximise Force:** Sets the forces for each particle type/color to 1.
-  - **Default Force:** Sets predefined force values.
-- **Save Forces to File:** Saves the current forces to a file named `forces.txt`.
-- **Sliders:** Manually set individual forces for each particle type/color against other particle types/colors.
+### 🎨 Global Variables
+- **🌟 Radius:** Adjust the radius of the particles using the slider. Tweak it to see how the particles interact at different sizes!
+- **💫 Particle Count:** Use the slider to control the number of particles. The magic happens when you release the slider! (Range: 10 to 1000 particles)
+- **🎨 Types Of Color:** Change the variety of particle colors. Slide, release, and watch the burst of colors! (Range: 2 to 8 colors)
+- **🔄 Refresh:** Hit this to refresh the simulation with your current settings.
+- **🔁 Wrap Particles To Viewport:** Toggle this to see if particles bounce back or loop around the edges of the screen!
 
-### Minimum Distance Control (If Enabled)
-- **Buttons:**
-  - **Random Min Dist:** Sets random minimum distances for each particle type/color.
-  - **Minimise Dist:** Sets the minimum distances to 1.
-  - **Maximise Dist:** Sets the minimum distances to 20.
-  - **Default Dist:** Sets predefined minimum distances.
-  - **Save Dist to File:** Saves the current minimum distances to a file `minDist.txt`.
-- **Sliders:** Manually set minimum distances for each particle type/color. The minimum value is 1 and the maximum is 30.
+### 📏 Distance Controls
+- **🔍 Show MinDist Control:** Click to expand and set the minimum distance for each particle type/color. Perfect for fine-tuning interactions!
+- **↔️ Same Min Dist:** Use this slider to apply the same minimum distance across all particle types/colors. (Range: 1 to 30)
+- **🔍 Show MaxDist Control:** Click to expand and set the maximum distance for each particle type/color. Make particles more social or distant!
+- **↔️ Same Max Dist:** Use this slider to apply the same maximum distance across all particle types/colors. (Range: 150 to 300)
 
-### Maximum Distance Control (If Enabled)
-- **Buttons:**
-  - **Random Max Dist:** Sets random maximum distances for each particle type/color.
-  - **Minimise Dist:** Sets the maximum distances 150.
-  - **Maximise Dist:** Sets the maximum distances 300.
-  - **Default Dist:** Sets predefined maximum distances.
-  - **Save Dist to File:** Saves the current maximum distances to a file `maxDist.txt`.
-- **Sliders:** Manually set maximum distances for each particle type/color. The minimum value is 150 and the maximum is 300.
+### 🎛️ Focus Control Settings
+- **🔀 Random Forces:** Shuffle the forces! Get a fresh set of interactions between particles with a click.
+- **🔄 Reset Forces:** Reset all forces to zero—perfect for a clean slate.
+- **🔽 Minimise Force:** Feeling minimal? Set all forces to -1.
+- **🔼 Maximise Force:** Go all out by setting all forces to 1.
+- **🎯 Default Force:** Use this to revert to predefined force values.
+- **💾 Save Forces to File:** Save your current force setup to `forces.txt`—perfect for sharing or reloading later.
+- **🎚️ Sliders:** Manually tweak the forces for each particle type/color pair. Get your hands dirty with the details!
+
+### 📏 Minimum Distance Control (If Enabled)
+- **🔀 Random Min Dist:** Randomize minimum distances—let the particles decide their own space!
+- **🔽 Minimise Dist:** Set all minimum distances to the tightest value of 1.
+- **🔼 Maximise Dist:** Spread them out by setting the minimum distances to 20.
+- **🎯 Default Dist:** Go back to predefined distances with a click.
+- **💾 Save Dist to File:** Save your min distance setup to `minDist.txt`.
+- **🎚️ Sliders:** Manually adjust minimum distances for each particle type/color. (Range: 1 to 30)
+
+### 📏 Maximum Distance Control (If Enabled)
+- **🔀 Random Max Dist:** Randomize maximum distances—give your particles some breathing room!
+- **🔽 Minimise Dist:** Tighten the space by setting all maximum distances to 150.
+- **🔼 Maximise Dist:** Set maximum distances to 300, for a spacious simulation.
+- **🎯 Default Dist:** Revert to default maximum distances.
+- **💾 Save Dist to File:** Save your max distance setup to `maxDist.txt`.
+- **🎚️ Sliders:** Manually adjust maximum distances for each particle type/color. (Range: 150 to 300)
+
+### 🕹️ Navigation Controls
+- **🔍 Zooming:** Use the mouse wheel to zoom in and out. Zoom in for details, zoom out for the big picture!
+- **🖱️ Panning:** Click and hold the middle mouse button to pan the view. Explore different parts of the simulation!
+- **🔄 Reset Zoom:** Press the `z` key to snap back to the default zoom level.
+- **🔄 Reset Panning:** Press the `m` key to reset the panning to the default center view.
+
+### 🖼️ Window Resizing
+*You bet I’m proud of this feature!*
+- **🪟 Main Window:** Drag the edges or corners of the main simulation window to resize it to your liking. Make it your own!
+- **📐 Control Window:** The control window width is also adjustable. Customize your workspace for the ultimate simulation experience!

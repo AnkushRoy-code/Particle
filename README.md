@@ -1,21 +1,28 @@
-~I'm currently porting the whole project to OpenGL, it'll take some time due to my lack of OpenGL knowledge and my device only supporting OpenGL2. So there will be fewer commits in this branch and I'll not push the OpenGL branch until it's completed.~
-
-I tried a lot but was ran into lot of problems. I'd say it's skill issue. I will start with making simple applications in OpenGL and then try to port it later. Exams are near and I have a big backlog to cover, JEE is also after two years. So there'll not be any updates here anymore before my JEE, only until I get bored studying Chemistry.
-
 # Particle Life Simulation
 
 An engaging implementation of the Particle Life simulation using C++, SDL2, and Dear ImGui. Watch as particles interact and form complex patterns based on simple rules!
 
-This project does not build in Windows for some, reason. It doesn't contain any OS dependent code that would make it unable to work with Windows. I recommend installing Linux to work with this project as I find that to be easier that coding in Windows.
+
+## Screenshot
+
+![Particle Screenshot](assets/particle.webp)
+
+## Demo Video
+
+<video width="100%" controls>
+  <source src="assets/particle.mkv" type="video/mp4">
+</video>
 
 ## Prerequisites
 
-Before you begin, ensure you have the following installed:
+Before you begin, a quick disclaimer: I was unable to run it in Windows platform. This codebase has no platform dependent code so it should've worked but due to my lack of knowledge on Windows I gave up trying to make it work after 6 hours of failure and I hadn't had the luxury of trying it out in a Mac. But it is confirmed and tested to work on many different linux distros and devices.
+
+Anyway, ensure you have the following installed:
 
 - C++ compiler (GCC, Clang, or MSVC)
 - CMake (version 3.10 or higher)
 - SDL2 library (Optional SDL2 is included, confirmed working on Linux only. Should work with other OS too)
-- Git (optional, for cloning the repository)
+- Git (For cloning the repository)
 
 ## Building the Project
 
@@ -56,10 +63,6 @@ And hope you don't get any errors.
 ## Running the Simulation
 After building, you can run the simulation:
 
-On Windows:
-```bash
-.\particle.exe
-```
 On macOS/Linux:
 ```bash
 ./particle
