@@ -9,9 +9,7 @@ An engaging implementation of the Particle Life simulation using C++, SDL2, and 
 
 ## Demo Video
 
-<video width="100%" controls>
-  <source src="assets/particle.mkv" type="video/mp4">
-</video>
+https://github.com/user-attachments/assets/f3ac5313-b75a-42c1-b6f2-0283616d8000
 
 ## Prerequisites
 
