@@ -5,7 +5,7 @@ An engaging implementation of the Particle Life simulation using C++, SDL2, and 
 
 ## Screenshot
 
-![Particle Screenshot](assets/particle.webp)
+![Particle Simulation](https://github.com/user-attachments/assets/f28c22d3-394f-453e-b6d0-d7f8d2ed7813)
 
 ## Demo Video
 
