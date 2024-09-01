@@ -4,6 +4,7 @@
 #include "particle.h"
 
 #include <SDL.h>
+#include <SDL_render.h>
 #include <functional>
 #include <imgui.h>
 #include <string>
@@ -78,6 +79,13 @@ class UI
     void checkBool(int start, int end, const char *string);
     void checkBoolMinDist(int start, int end, const char *string);
     void checkBoolMaxDist(int start, int end, const char *string);
+    SDL_Vertex calcParticlePos(int Radius,
+                               float Scale,
+                               float OffSetX,
+                               float OffSetY,
+                               float x,
+                               float y,
+                               int color) const;
 
   private:
     int m_width;
@@ -100,6 +108,8 @@ class UI
     int m_maxDist[COLOR_COUNT][COLOR_COUNT];
     std::vector<particle> m_particles;
 
+    std::vector<int> generateIndices(int numRects);
+    static const SDL_Color ColorMap[COLOR_COUNT];
     // initial values
     static const float defaultForceValue[COLOR_COUNT][COLOR_COUNT];
     static const int defaultMinDistanceValue[COLOR_COUNT][COLOR_COUNT];

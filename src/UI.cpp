@@ -10,6 +10,7 @@
 #include <SDL.h>
 #include <ctime>
 #include <random>
+#include <vector>
 
 //---------------------------------------------------------------------------
 // Local Functions/Values
@@ -71,6 +72,17 @@ const int UI::defaultMaxDistanceValue[COLOR_COUNT][COLOR_COUNT] = {
     {294,  196,  201,  248,  176,   284,   239,  170},  // CYAN,
     {169,  265,  288,  154,  275,   217,   230,  283}   // MAGENTA
     // clang-format on
+};
+
+const SDL_Color UI::ColorMap[COLOR_COUNT] {
+    {255, 0, 0, 255},      // RED
+    {0, 255, 0, 255},      // GREEN
+    {0, 0, 255, 255},      // BLUE
+    {255, 255, 255, 255},  // WHITE
+    {255, 255, 25, 255},   // YELLOW
+    {145, 30, 180, 255},   // PURPLE
+    {70, 240, 240, 255},   // CYAN
+    {240, 50, 230, 255}    // MAGENTA
 };
 
 //---------------------------------------------------------------------------
@@ -426,16 +438,96 @@ void UI::updateParticle(double DeltaTime)
 
 const std::vector<particle> &UI::getParticles() const { return m_particles; }
 
+std::vector<int> UI::generateIndices(int numRects)
+{
+    std::vector<int> indices;
+    indices.reserve(numRects * 6);  // Pre-allocate space for efficiency
+
+    for (int i = 0; i < numRects; ++i)
+    {
+        int baseIndex = i * 4;  // 4 vertices per rectangle
+
+        // Triangle 1: (baseIndex, baseIndex+1, baseIndex+2)
+        indices.push_back(baseIndex);
+        indices.push_back(baseIndex + 1);
+        indices.push_back(baseIndex + 2);
+
+        // Triangle 2: (baseIndex, baseIndex+2, baseIndex+3)
+        indices.push_back(baseIndex);
+        indices.push_back(baseIndex + 2);
+        indices.push_back(baseIndex + 3);
+    }
+
+    return indices;
+}
+
+SDL_Vertex UI::calcParticlePos(int Radius,
+                               float Scale,
+                               float OffSetX,
+                               float OffSetY,
+                               float x,
+                               float y,
+                               int color) const
+{
+    // position
+    SDL_Vertex rect;
+    SDL_FPoint position;
+
+    float scaledRadius = static_cast<float>(Radius + 1) * Scale
+                         / 2.0f;  // Center around particle
+
+    position.x = (x * Scale) + OffSetX - scaledRadius + m_ImGuiWindowWidth;
+    position.y = (y * Scale) + OffSetY - scaledRadius;
+    rect       = {position, ColorMap[color], SDL_FPoint {1, 1}};
+
+    return rect;
+}
+
 void UI::renderParticle(SDL_Renderer *Renderer,
                         float Scale,
                         float OffSetX,
                         float OffSetY)
 {
-    const auto &particles = getParticles();
+    const auto &particles    = getParticles();
+    std::vector<int> indices = generateIndices(particles.size());
+    std::vector<SDL_Vertex> ParticlesVertex;
+
     for (const auto &particle: particles)
     {
-        particle.drawParticle(Renderer, m_radius, Scale, OffSetX, OffSetY);
+        SDL_Vertex TopLeft = calcParticlePos(
+            m_radius, Scale, OffSetX, OffSetY,
+            particle.getPosX() - static_cast<float>(m_radius) / 2,
+            particle.getPosY() - static_cast<float>(m_radius) / 2,
+            particle.getColor());
+
+        SDL_Vertex TopRight = calcParticlePos(
+            m_radius, Scale, OffSetX, OffSetY,
+            particle.getPosX() + static_cast<float>(m_radius) / 2,
+            particle.getPosY() - static_cast<float>(m_radius) / 2,
+            particle.getColor());
+
+        SDL_Vertex BottomRight = calcParticlePos(
+            m_radius, Scale, OffSetX, OffSetY,
+            particle.getPosX() + static_cast<float>(m_radius) / 2,
+            particle.getPosY() + static_cast<float>(m_radius) / 2,
+            particle.getColor());
+
+        SDL_Vertex BottomLeft = calcParticlePos(
+            m_radius, Scale, OffSetX, OffSetY,
+            particle.getPosX() - static_cast<float>(m_radius) / 2,
+            particle.getPosY() + static_cast<float>(m_radius) / 2,
+            particle.getColor());
+
+        // Add the four vertices of the rectangle to the vector
+        ParticlesVertex.push_back(TopLeft);
+        ParticlesVertex.push_back(TopRight);
+        ParticlesVertex.push_back(BottomRight);
+        ParticlesVertex.push_back(BottomLeft);
+        /* particle.drawParticle(Renderer, m_radius, Scale, OffSetX, OffSetY);
+         */
     }
+    SDL_RenderGeometry(Renderer, nullptr, ParticlesVertex.data(),
+                       ParticlesVertex.size(), indices.data(), indices.size());
 }
 
 void UI::setRadius(int Radius) { m_radius = Radius; }

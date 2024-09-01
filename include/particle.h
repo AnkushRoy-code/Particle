@@ -10,12 +10,6 @@ class particle
   public:
     particle(float X, float Y, int Color);
 
-    void drawParticle(SDL_Renderer *Renderer,
-                      int Radius,
-                      float Scale,
-                      float OffSetX,
-                      float OffSetY) const;
-
     void update(const std::vector<particle> &Particles,
                 float Width,
                 float Height,
@@ -28,6 +22,7 @@ class particle
 
     float getPosX() const;
     float getPosY() const;
+    int getColor() const { return m_color; }
     void setPos(int X, int Y)
     {
         m_x = X;
@@ -51,10 +46,6 @@ class particle
     int m_maxDist[COLOR_COUNT][COLOR_COUNT];
 
   private:
-    SDL_Rect calcParticleSize(int Radius,
-                              float Scale,
-                              float OffSetX,
-                              float OffSetY) const;
     void wrapAround(float Width, float Height);
     void dontWrapAround(float Width, float Height);
 
