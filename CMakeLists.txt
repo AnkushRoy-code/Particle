@@ -40,6 +40,14 @@ add_executable(particle ${SOURCES})
 # target_link_libraries(particle SDL2::SDL2 SDL2::SDL2main OpenMP::OpenMP_CXX)
 target_link_libraries(particle SDL2::SDL2 SDL2::SDL2main)
 
+set(RES_SOURCE_DIR "${CMAKE_SOURCE_DIR}/res")
+set(RES_DEST_DIR "${CMAKE_BINARY_DIR}/res")
+
+add_custom_command(
+    TARGET particle POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy_directory ${RES_SOURCE_DIR} ${RES_DEST_DIR}
+)
+
 if (CMAKE_SYSTEM_NAME STREQUAL "Windows")
   target_compile_options(particle PRIVATE -Wall -O3 -ffast-math)
 elseif (CMAKE_SYSTEM_NAME STREQUAL "Linux")

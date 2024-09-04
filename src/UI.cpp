@@ -3,6 +3,7 @@
 #include "UI.h"
 
 #include "color.h"
+#include "font.h"
 #include "imgui.h"
 #include "imgui_impl_sdl2.h"
 #include "imgui_impl_sdlrenderer2.h"
@@ -19,7 +20,7 @@
 // stole from the imgui.h/cpp file
 static void HelpMarker(const char *desc)
 {
-    ImGui::TextDisabled("(?)");
+    ImGui::TextDisabled(ICON_FA_CIRCLE_INFO);
     if (ImGui::BeginItemTooltip())
     {
         ImGui::PushTextWrapPos(ImGui::GetFontSize() * 35.0f);
@@ -129,19 +130,31 @@ void UI::initialize(SDL_Window *window,
 
     ImGuiIO &io = ImGui::GetIO();
 
+    // Fonts
+    io.Fonts->AddFontDefault();
+    ImFontConfig iconsConfig;
+    iconsConfig.MergeMode              = true;
+    iconsConfig.PixelSnapH             = true;
+    iconsConfig.GlyphMinAdvanceX       = 12.0f;
+    static const ImWchar icon_ranges[] = {ICON_MIN_FA, ICON_MAX_FA, 0};
+
+    io.Fonts->AddFontFromFileTTF(FONT_ICON_FILE_NAME_FAS, 12.0f, &iconsConfig,
+                                 icon_ranges);
+
+    // Inputs
     io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
     io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;
     io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
     io.ConfigFlags |= ImGuiTreeNodeFlags_DefaultOpen;
 
+    // Theme
     ImGui::StyleColorsDark();
 
     ImGui_ImplSDL2_InitForSDLRenderer(window, renderer);
     ImGui_ImplSDLRenderer2_Init(renderer);
 
-    ImGuiStyle &style = ImGui::GetStyle();
-
     // For some friendly looking buttons
+    ImGuiStyle &style        = ImGui::GetStyle();
     style.FrameRounding      = 5.0f;
     style.GrabRounding       = 12.0f;
     style.WindowTitleAlign   = ImVec2(0.5f, 0.5f);
@@ -176,7 +189,7 @@ void UI::setup()
 
 void UI::ImGuiWindowMain(ImGuiWindowFlags WinFlags)
 {
-    if (ImGui::Begin("Control Panel", NULL, WinFlags))
+    if (ImGui::Begin(ICON_FA_SLIDERS " Control Panel", NULL, WinFlags))
     {
         ImGuiShowGlobalVariables();
 
@@ -205,10 +218,10 @@ void *GIiGuiDemoMarkerCallbackUserData           = NULL;
 
 void UI::ImGuiShowMenuBar()
 {
-    IMGUI_DEMO_MARKER("MENU");
+    IMGUI_DEMO_MARKER(ICON_FA_BARS " MENU");
     if (ImGui::BeginMenuBar())
     {
-        if (ImGui::BeginMenu("Menu"))
+        if (ImGui::BeginMenu(ICON_FA_BARS " Menu"))
         {
             if (ImGui::BeginMenu("Menu")) { ImGui::EndMenu(); }
             ImGui::EndMenu();
@@ -227,12 +240,12 @@ void UI::ImGuiShowGlobalVariables()
 
     m_ImGuiWindowWidth = ImGui::GetWindowWidth();
 
-    ImGui::SeparatorText("Global variables");
+    ImGui::SeparatorText(ICON_FA_GLOBE " Global variables");
 
-    ImGui::SliderInt("Radius", &m_radius, 1, 10, 0,
+    ImGui::SliderInt(ICON_FA_CIRCLE " Radius", &m_radius, 1, 10, 0,
                      ImGuiSliderFlags_AlwaysClamp);
 
-    ImGui::Text("Particle Count");
+    ImGui::Text(ICON_FA_CUBES " Particle Count");
     ImGui::PushID(1);
     ImGui::SliderInt(" ", &m_particleCount, 10, 1000, 0,
                      ImGuiSliderFlags_AlwaysClamp);
@@ -246,7 +259,7 @@ void UI::ImGuiShowGlobalVariables()
     ImGui::SameLine();
     HelpMarker("This changes the number of particles for each colour");
 
-    ImGui::Text("Types of Colour");
+    ImGui::Text(ICON_FA_PALETTE " Types of Colour");
     (ImGui::SliderInt(" ", &m_numOfParticleColor, 2, 8, 0,
                       ImGuiSliderFlags_AlwaysClamp));
     {
@@ -259,27 +272,28 @@ void UI::ImGuiShowGlobalVariables()
     HelpMarker(
         "This changes the number of different colours in the simulation");
 
-    if (ImGui::Button("Refresh"))
+    if (ImGui::Button(ICON_FA_ARROW_ROTATE_RIGHT " Refresh"))
     {
         initializeParticle(m_particleCount, m_numOfParticleColor);
     }
     ImGui::SameLine();
-    ImGui::Checkbox("Wrap Particles to viewport", &m_wrap);
+    ImGui::Checkbox(ICON_FA_EXPAND " Wrap Particles to viewport", &m_wrap);
 
     if (!m_showSameMinDist)
     {
-        ImGui::Checkbox("Show MinDist Control", &m_showMinDistControl);
+        ImGui::Checkbox(ICON_FA_EYE " Show MinDist Control",
+                        &m_showMinDistControl);
         if (!m_showMinDistControl) { ImGui::SameLine(); }
     }
     if (!m_showMinDistControl)
     {
-        ImGui::Checkbox("Same Min Dist?##3", &m_showSameMinDist);
+        ImGui::Checkbox(" Same Min Dist?##3", &m_showSameMinDist);
     }
 
     if (m_showSameMinDist)
     {
-        if (ImGui::SliderInt("Minimum dist", &m_sameMinDist, 1, 30, 0,
-                             ImGuiSliderFlags_AlwaysClamp))
+        if (ImGui::SliderInt(ICON_FA_RULER " Minimum dist", &m_sameMinDist, 1,
+                             30, 0, ImGuiSliderFlags_AlwaysClamp))
         {
             changeAllMin(m_sameMinDist);
         }
@@ -287,18 +301,19 @@ void UI::ImGuiShowGlobalVariables()
 
     if (!m_showSameMaxDist)
     {
-        ImGui::Checkbox("Show MaxDist Control", &m_showMaxDistControl);
+        ImGui::Checkbox(ICON_FA_EYE " Show MaxDist Control",
+                        &m_showMaxDistControl);
         if (!m_showMaxDistControl) { ImGui::SameLine(); }
     }
     if (!m_showMaxDistControl)
     {
-        ImGui::Checkbox("Same Max Dist?##3", &m_showSameMaxDist);
+        ImGui::Checkbox(" Same Max Dist?##3", &m_showSameMaxDist);
     }
 
     if (m_showSameMaxDist)
     {
-        if (ImGui::SliderInt("Maximum dist", &m_sameMaxDist, 150, 300, 0,
-                             ImGuiSliderFlags_AlwaysClamp))
+        if (ImGui::SliderInt(ICON_FA_RULER " Maximum dist", &m_sameMaxDist, 150,
+                             300, 0, ImGuiSliderFlags_AlwaysClamp))
         {
             changeAllMax(m_sameMaxDist);
         }
@@ -307,28 +322,40 @@ void UI::ImGuiShowGlobalVariables()
 
 void UI::ImGuiShowForce()
 {
-    if (ImGui::CollapsingHeader("Focus Control"))
+    if (ImGui::CollapsingHeader(ICON_FA_BOLT " Force Control"))
     {
-        if (ImGui::Button("Random Forces")) { populateRandomForce(); }
+        if (ImGui::Button(ICON_FA_DICE " Random Forces"))
+        {
+            populateRandomForce();
+        }
 
         ImGui::SameLine();
 
-        if (ImGui::Button("Reset Force")) { resetForce(); }
+        if (ImGui::Button(ICON_FA_ARROW_ROTATE_LEFT " Reset Force"))
+        {
+            resetForce();
+        }
 
         ImGui::SameLine();
 
-        if (ImGui::Button("Minimise Force")) { minimiseForce(); }
-        if (ImGui::Button("Maximise Force")) { maximiseForce(); }
+        if (ImGui::Button(ICON_FA_MINIMIZE " Minimise Force"))
+        {
+            minimiseForce();
+        }
+        if (ImGui::Button(ICON_FA_MAXIMIZE " Maximise Force"))
+        {
+            maximiseForce();
+        }
 
         ImGui::SameLine();
 
-        if (ImGui::Button("Default Force")) { setDefaultForce(); }
+        if (ImGui::Button(ICON_FA_GEAR " Default Force")) { setDefaultForce(); }
 
         ImGui::Spacing();
         ImGui::Separator();
         ImGui::Spacing();
 
-        if (ImGui::Button("Save Forces To File"))
+        if (ImGui::Button(ICON_FA_FLOPPY_DISK " Save Forces To File"))
         {
             ImGui::LogToFile(2, "forces.txt");
 
@@ -346,19 +373,31 @@ void UI::ImGuiShowMinDist()
 {
     if (ImGui::CollapsingHeader("Minimum Distance Control"))
     {
-        if (ImGui::Button("Random Min Dist")) { populateRandomMinDistance(); }
+        if (ImGui::Button(ICON_FA_DICE " Random Min Dist"))
+        {
+            populateRandomMinDistance();
+        }
 
         ImGui::SameLine();
 
-        if (ImGui::Button("Minimise Min Dist")) { minimiseMinDistance(); }
-        if (ImGui::Button("Maximise Min Distance")) { maximiseMinDistance(); }
-        if (ImGui::Button("Default MinDist")) { setDefaultMinDistance(); }
+        if (ImGui::Button(ICON_FA_MINIMIZE " Minimise Min Dist"))
+        {
+            minimiseMinDistance();
+        }
+        if (ImGui::Button(ICON_FA_MAXIMIZE " Maximise Min Distance"))
+        {
+            maximiseMinDistance();
+        }
+        if (ImGui::Button(ICON_FA_GEAR " Default MinDist"))
+        {
+            setDefaultMinDistance();
+        }
 
         ImGui::Spacing();
         ImGui::Separator();
         ImGui::Spacing();
 
-        if (ImGui::Button("Save Min Dist To File"))
+        if (ImGui::Button(ICON_FA_FLOPPY_DISK " Save Min Dist To File"))
         {
             ImGui::LogToFile(2, "minDist.txt");
             ImGui::SameLine();
@@ -375,20 +414,31 @@ void UI::ImGuiShowMaxDist()
     if (ImGui::CollapsingHeader("Maximum Distance Control"))
     {
 
-        if (ImGui::Button("Random Max Dist")) { populateRandomMaxDistance(); }
+        if (ImGui::Button(ICON_FA_DICE " Random Max Dist"))
+        {
+            populateRandomMaxDistance();
+        }
 
         ImGui::SameLine();
 
-        if (ImGui::Button("Minimise Max Dist")) { minimiseMaxDistance(); }
-        if (ImGui::Button("Maximise Max Distance")) { maximiseMaxDistance(); }
-
-        if (ImGui::Button("Default MaxDist")) { setDefaultMaxDistance(); }
+        if (ImGui::Button(ICON_FA_MINIMIZE " Minimise Max Dist"))
+        {
+            minimiseMaxDistance();
+        }
+        if (ImGui::Button(ICON_FA_MAXIMIZE " Maximise Max Distance"))
+        {
+            maximiseMaxDistance();
+        }
+        if (ImGui::Button(ICON_FA_GEAR " Default MaxDist"))
+        {
+            setDefaultMaxDistance();
+        }
 
         ImGui::Spacing();
         ImGui::Separator();
         ImGui::Spacing();
 
-        if (ImGui::Button("Save Max Dist To File"))
+        if (ImGui::Button(ICON_FA_FLOPPY_DISK " Save Max Dist To File"))
         {
             ImGui::LogToFile(2, "maxDist.txt");
             ImGui::SameLine();
