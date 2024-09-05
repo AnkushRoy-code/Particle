@@ -23,7 +23,8 @@ class UI
     void setup();
     void close();
 
-    void update(SDL_Renderer *renderer,
+    void update(SDL_Window *Window,
+                SDL_Renderer *Renderer,
                 double DeltaTime,
                 float Scale,
                 float OffSetX,
@@ -33,7 +34,8 @@ class UI
 
     const std::vector<particle> &getParticles() const;
 
-    void renderParticle(SDL_Renderer *Renderer,
+    void renderParticle(SDL_Window *Window,
+                        SDL_Renderer *Renderer,
                         float Scale,
                         float OffSetX,
                         float OffSetY);

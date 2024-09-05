@@ -63,7 +63,7 @@ bool App::initialize()
 void App::update(float Scale, float offSetX, float offSetY)
 {
     m_UI.setup();
-    m_UI.update(m_renderer, deltaTime, Scale, offSetX, offSetY);
+    m_UI.update(m_window, m_renderer, deltaTime, Scale, offSetX, offSetY);
 
     int h, w;
     SDL_GetWindowSize(m_window, &w, &h);

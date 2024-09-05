@@ -9,6 +9,10 @@
 #include "imgui_impl_sdlrenderer2.h"
 
 #include <SDL.h>
+#include <SDL_pixels.h>
+#include <SDL_rect.h>
+#include <SDL_render.h>
+#include <SDL_video.h>
 #include <ctime>
 #include <random>
 #include <vector>
@@ -458,7 +462,8 @@ void UI::close()
 }
 
 // didn't find a better name. What it does is setup and run the imgui stuff.
-void UI::update(SDL_Renderer *renderer,
+void UI::update(SDL_Window *Window,
+                SDL_Renderer *Renderer,
                 double DeltaTime,
                 float Scale,
                 float OffSetX,
@@ -467,13 +472,13 @@ void UI::update(SDL_Renderer *renderer,
 
     ImGuiIO &io = ImGui::GetIO();
     ImGui::Render();
-    SDL_RenderSetScale(renderer, io.DisplayFramebufferScale.x,
+    SDL_RenderSetScale(Renderer, io.DisplayFramebufferScale.x,
                        io.DisplayFramebufferScale.y);
-    SDL_SetRenderDrawColor(renderer, 25, 25, 25, 255);
-    SDL_RenderClear(renderer);
+    SDL_SetRenderDrawColor(Renderer, 25, 25, 25, 255);
+    SDL_RenderClear(Renderer);
     updateParticle(DeltaTime / 1000);
-    renderParticle(renderer, Scale, OffSetX, OffSetY);
-    ImGui_ImplSDLRenderer2_RenderDrawData(ImGui::GetDrawData(), renderer);
+    renderParticle(Window, Renderer, Scale, OffSetX, OffSetY);
+    ImGui_ImplSDLRenderer2_RenderDrawData(ImGui::GetDrawData(), Renderer);
 }
 
 void UI::updateParticle(double DeltaTime)
@@ -533,7 +538,8 @@ SDL_Vertex UI::calcParticlePos(int Radius,
     return rect;
 }
 
-void UI::renderParticle(SDL_Renderer *Renderer,
+void UI::renderParticle(SDL_Window *Window,
+                        SDL_Renderer *Renderer,
                         float Scale,
                         float OffSetX,
                         float OffSetY)
@@ -576,8 +582,30 @@ void UI::renderParticle(SDL_Renderer *Renderer,
         /* particle.drawParticle(Renderer, m_radius, Scale, OffSetX, OffSetY);
          */
     }
+
     SDL_RenderGeometry(Renderer, nullptr, ParticlesVertex.data(),
                        ParticlesVertex.size(), indices.data(), indices.size());
+    if (Scale != 1)
+    {
+        SDL_Rect rect;
+
+        int w, h;
+        SDL_GetWindowSize(Window, &w, &h);
+        rect.x = m_ImGuiWindowWidth + OffSetX;
+        rect.y = OffSetY;
+        rect.w = (w - m_ImGuiWindowWidth) * Scale;
+        rect.h = h * Scale;
+
+        SDL_Color initialColor;
+        SDL_GetRenderDrawColor(Renderer, &initialColor.r, &initialColor.g,
+                               &initialColor.b, &initialColor.a);
+        SDL_SetRenderDrawColor(Renderer, 116, 199, 236, 255);
+
+        SDL_RenderDrawRect(Renderer, &rect);
+
+        SDL_SetRenderDrawColor(Renderer, initialColor.r, initialColor.g,
+                               initialColor.b, initialColor.a);
+    }
 }
 
 void UI::setRadius(int Radius) { m_radius = Radius; }
