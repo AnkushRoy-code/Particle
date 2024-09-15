@@ -1,58 +1,93 @@
-cmake_minimum_required(VERSION 3.10)
-project(particle)
+cmake_minimum_required(VERSION 3.16)
+set(CMAKE_CXX_STANDARD 17)
 
-set(CMAKE_CXX_STANDARD 11)
-include_directories(include libs/imgui)
+option(PRODUCTION_BUILD "Make this a production build" OFF)
 
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
-option(ParticleVendored "Use vendored libraries" ON)
+set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Release>:Release>")
+set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
 
-if(ParticleVendored)
-    add_subdirectory(libs/SDL2 EXCLUDE_FROM_ALL)
-else()
-    # 1. Look for a SDL2 package, 2. look for the SDL2 component and 3. fail if none can be found
-    find_package(SDL2 REQUIRED CONFIG REQUIRED COMPONENTS SDL2)
+set(CMAKE_INTERPROCEDURAL_OPTIMIZATION TRUE) #link time optimization
 
-    # 1. Look for a SDL2 package, 2. Look for the SDL2maincomponent and 3. DO NOT fail when SDL2main is not available
-    find_package(SDL2 REQUIRED CONFIG COMPONENTS SDL2main)
+if(MSVC) 
+add_compile_options(/arch:AVX2) #make sure SIMD optimizations take place
 endif()
 
-# find_package(OpenMP REQUIRED)
-# find_package(SDL2 REQUIRED)
+project(ParticleSimulation)
 
-set(SOURCES
-    src/main.cpp
-    src/App.cpp
-    src/SDLstuff.cpp
-    src/UI.cpp
-    src/particle.cpp
-    libs/imgui/imgui.cpp
-    libs/imgui/imgui_demo.cpp
-    libs/imgui/imgui_draw.cpp
-    libs/imgui/imgui_widgets.cpp
-    libs/imgui/imgui_tables.cpp
-    libs/imgui/imgui_impl_sdl2.cpp
-    libs/imgui/imgui_impl_sdlrenderer2.cpp
-)
+set(SDL_STATIC ON)
 
-add_executable(particle ${SOURCES})
-# target_link_libraries(particle SDL2::SDL2 SDL2::SDL2main OpenMP::OpenMP_CXX)
-target_link_libraries(particle SDL2::SDL2 SDL2::SDL2main)
+add_subdirectory(thirdparty/SDL-release-2.30.5)
+add_subdirectory(thirdparty/glad)
+add_subdirectory(thirdparty/glm)
+add_subdirectory(thirdparty/imgui-docking)
 
-set(RES_SOURCE_DIR "${CMAKE_SOURCE_DIR}/res")
-set(RES_DEST_DIR "${CMAKE_BINARY_DIR}/res")
+file(GLOB_RECURSE MY_SOURCES CONFIGURE_DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/src/*.cpp")
 
+add_executable("${CMAKE_PROJECT_NAME}")
+
+set_property(TARGET "${CMAKE_PROJECT_NAME}" PROPERTY CXX_STANDARD 17)
+
+target_compile_definitions("${CMAKE_PROJECT_NAME}" PUBLIC GLFW_INCLUDE_NONE=1) 
+
+if(PRODUCTION_BUILD)
+	# setup the ASSETS_PATH macro to be in the root folder of your exe
+	target_compile_definitions("${CMAKE_PROJECT_NAME}" PUBLIC RESOURCES_PATH="./resources/") 
+ 
+	target_compile_definitions("${CMAKE_PROJECT_NAME}" PUBLIC PRODUCTION_BUILD=1) 
+
+else()
+	# This is useful to get an ASSETS_PATH in your IDE during development
+	target_compile_definitions("${CMAKE_PROJECT_NAME}" PUBLIC RESOURCES_PATH="${CMAKE_CURRENT_SOURCE_DIR}/resources/")
+	target_compile_definitions("${CMAKE_PROJECT_NAME}" PUBLIC PRODUCTION_BUILD=0) 
+
+endif()
+
+target_sources("${CMAKE_PROJECT_NAME}" PRIVATE ${MY_SOURCES})
+
+if(MSVC) # If using the VS compiler...
+
+	target_compile_definitions("${CMAKE_PROJECT_NAME}" PUBLIC _CRT_SECURE_NO_WARNINGS)
+
+	#add this line if you want to remove the console!
+	#set_target_properties("${CMAKE_PROJECT_NAME}" PROPERTIES LINK_FLAGS "/SUBSYSTEM:WINDOWS /ENTRY:mainCRTStartup") #no console
+	
+	#set_property(TARGET "${CMAKE_PROJECT_NAME}" PROPERTY MSVC_RUNTIME_LIBRARY "MultiThreadedDebug<$<CONFIG:Debug>:Debug>")
+	#set_property(TARGET "${CMAKE_PROJECT_NAME}" PROPERTY MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Release>:Release>")
+
+endif()
+
+target_include_directories("${CMAKE_PROJECT_NAME}" PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/include/")
+
+set(RESOURCES_OUTPUT_DIR "${CMAKE_BINARY_DIR}/res")
+
+# Custom command to copy the resources folder
 add_custom_command(
-    TARGET particle POST_BUILD
-    COMMAND ${CMAKE_COMMAND} -E copy_directory ${RES_SOURCE_DIR} ${RES_DEST_DIR}
+    TARGET ${CMAKE_PROJECT_NAME}
+    POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy_directory
+    ${CMAKE_CURRENT_SOURCE_DIR}/res
+    ${RESOURCES_OUTPUT_DIR}
+    COMMENT "Copying resources to the build directory."
 )
+
+find_package(PkgConfig REQUIRED)
+pkg_check_modules(GL REQUIRED gl)
+target_link_libraries("${CMAKE_PROJECT_NAME}" PRIVATE ${GL_LIBRARIES})
+include_directories(${GL_INCLUDE_DIRS})
+
+target_link_libraries("${CMAKE_PROJECT_NAME}" PRIVATE glm 
+    glad SDL2-static imgui)
+
+# target_compile_options(ParticleSimulation PRIVATE -fsanitize=address) # for memory leaks
+# target_link_options(ParticleSimulation PRIVATE -fsanitize=address)
 
 if (CMAKE_SYSTEM_NAME STREQUAL "Windows")
-  target_compile_options(particle PRIVATE -Wall -O3 -ffast-math)
+  target_compile_options("${CMAKE_PROJECT_NAME}" PRIVATE -Wall -O3 -ffast-math)
 elseif (CMAKE_SYSTEM_NAME STREQUAL "Linux")
-  target_compile_options(particle PRIVATE -Wall -O3 -ffast-math -Wextra -pedantic)
+  target_compile_options("${CMAKE_PROJECT_NAME}" PRIVATE -Wall -O3 -ffast-math -Wextra -pedantic)
 elseif (CMAKE_SYSTEM_NAME STREQUAL "Darwin")
-  target_compile_options(particle PRIVATE -Wall -O3 -ffast-math -Wextra -pedantic)
+  target_compile_options("${CMAKE_PROJECT_NAME}" PRIVATE -Wall -O3  -lGL -ffast-math -Wextra -pedantic)
 endif()
 
