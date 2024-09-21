@@ -15,7 +15,7 @@ void SDLStuff::initialise(SDL_Window *&window, SDL_Renderer *&renderer)
     SDL_WindowFlags window_flags =
         (SDL_WindowFlags)(SDL_WINDOW_ALLOW_HIGHDPI | SDL_WINDOW_RESIZABLE);
 
-    window = SDL_CreateWindow("Graphics Engine", SDL_WINDOWPOS_UNDEFINED,
+    window = SDL_CreateWindow("Particle", SDL_WINDOWPOS_UNDEFINED,
                               SDL_WINDOWPOS_UNDEFINED, m_WIDTH, m_HEIGHT,
                               window_flags);
 
