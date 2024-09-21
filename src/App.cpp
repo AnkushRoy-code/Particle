@@ -2,10 +2,10 @@
 
 #include "SDLstuff.h"
 #include "UI.h"
-#include "imgui_impl_sdl2.h"
 
 #include <SDL.h>
 #include <iostream>
+#include <backends/imgui_impl_sdl2.h>
 
 //---------------------------------------------------------------------------
 //  Local Things
@@ -27,8 +27,7 @@ void calcDeltatime()
 {
     lastTick    = currentTick;
     currentTick = SDL_GetPerformanceCounter();
-    deltaTime   = (double)((currentTick - lastTick) * 1000
-                         / (double)SDL_GetPerformanceFrequency());
+    deltaTime   = (double)((currentTick - lastTick) * 1000 / (double)SDL_GetPerformanceFrequency());
 }
 
 //---------------------------------------------------------------------------
@@ -40,15 +39,13 @@ bool App::initialize()
 
     if (m_window == nullptr)
     {
-        std::cerr << "Window could not be created! SDL Error: "
-                  << SDL_GetError() << std::endl;
+        std::cerr << "Window could not be created! SDL Error: " << SDL_GetError() << std::endl;
         return false;
     }
 
     if (m_renderer == nullptr)
     {
-        std::cerr << "Renderer could not be created! SDL Error: "
-                  << SDL_GetError() << std::endl;
+        std::cerr << "Renderer could not be created! SDL Error: " << SDL_GetError() << std::endl;
         return false;
     }
 
@@ -97,14 +94,12 @@ void App::processEvents(SDL_Event &event,
         // Always process keyboard and exit events
         if (event.type == SDL_KEYDOWN)
         {
-            handleKeyDown(event, scale, offsetX, offsetY, offsetEndX,
-                          offsetEndY);
+            handleKeyDown(event, scale, offsetX, offsetY, offsetEndX, offsetEndY);
         }
         else if (event.type == SDL_QUIT) { quit = true; }
 
         // Skip handling mouse events if ImGui window or item is hovered
-        if (ImGui::IsWindowHovered(ImGuiHoveredFlags_AnyWindow)
-            || ImGui::IsAnyItemHovered())
+        if (ImGui::IsWindowHovered(ImGuiHoveredFlags_AnyWindow) || ImGui::IsAnyItemHovered())
         {
             continue;
         }
@@ -115,13 +110,13 @@ void App::processEvents(SDL_Event &event,
             case SDL_MOUSEWHEEL: adjustScale(event, scale); break;
 
             case SDL_MOUSEBUTTONDOWN:
-                handleMouseButtonDown(event, middleMouseButtonPressed,
-                                      mouseStartPanX, mouseStartPanY, scale);
+                handleMouseButtonDown(event, middleMouseButtonPressed, mouseStartPanX,
+                                      mouseStartPanY, scale);
                 break;
 
             case SDL_MOUSEBUTTONUP:
-                handleMouseButtonUp(event, middleMouseButtonPressed, offsetX,
-                                    offsetY, offsetEndX, offsetEndY);
+                handleMouseButtonUp(event, middleMouseButtonPressed, offsetX, offsetY, offsetEndX,
+                                    offsetEndY);
                 break;
 
             default: break;
@@ -214,9 +209,9 @@ void App::finalizeFrame()
     if (frameDelay > frameTime) { SDL_Delay(frameDelay - frameTime); }
 }
 
-int App::RunEngine(App Engine)
+int App::RunEngine()
 {
-    if (!Engine.initialize())
+    if (!initialize())
     {
         std::cerr << "Failed to initialize!" << std::endl;
         return 1;
@@ -235,21 +230,19 @@ int App::RunEngine(App Engine)
     bool middleMouseButtonPressed = false;
     SDL_Event event;
 
-    while (!Engine.m_quit)
+    while (!m_quit)
     {
         frameStart = SDL_GetTicks();
         calcDeltatime();
 
-        processEvents(event, scale, middleMouseButtonPressed, mouseStartPanX,
-                      mouseStartPanY, offsetX, offsetY, offsetEndX, offsetEndY,
-                      Engine.m_quit);
-        handleMouseMotion(middleMouseButtonPressed, scale, mouseStartPanX,
-                          mouseStartPanY, offsetX, offsetY, offsetEndX,
-                          offsetEndY);
+        processEvents(event, scale, middleMouseButtonPressed, mouseStartPanX, mouseStartPanY,
+                      offsetX, offsetY, offsetEndX, offsetEndY, m_quit);
+        handleMouseMotion(middleMouseButtonPressed, scale, mouseStartPanX, mouseStartPanY, offsetX,
+                          offsetY, offsetEndX, offsetEndY);
         clampScale(scale);
 
-        Engine.update(scale, offsetX, offsetY);
-        Engine.render();
+        update(scale, offsetX, offsetY);
+        render();
     }
 
     finalizeFrame();
@@ -257,13 +250,10 @@ int App::RunEngine(App Engine)
     frameTime = SDL_GetTicks() - frameStart;
     if (frameDelay > frameTime) { SDL_Delay(frameDelay - frameTime); }
 
-    Engine.close();
+    close();
 
-    if (Engine.m_window != nullptr) { std::cout << "Window failed to close"; }
-    if (Engine.m_renderer != nullptr)
-    {
-        std::cout << "Renderer failed to close";
-    }
+    if (m_window != nullptr) { std::cout << "Window failed to close"; }
+    if (m_renderer != nullptr) { std::cout << "Renderer failed to close"; }
 
     return 0;
 }
