@@ -47,13 +47,13 @@ target_compile_definitions("${CMAKE_PROJECT_NAME}" PUBLIC GLFW_INCLUDE_NONE=1)
 
 if(PRODUCTION_BUILD)
 	# setup the ASSETS_PATH macro to be in the root folder of your exe
-	target_compile_definitions("${CMAKE_PROJECT_NAME}" PUBLIC RESOURCES_PATH="./resources/") 
+	target_compile_definitions("${CMAKE_PROJECT_NAME}" PUBLIC RESOURCES_PATH="./res/") 
 
 	target_compile_definitions("${CMAKE_PROJECT_NAME}" PUBLIC PRODUCTION_BUILD=1) 
 
 else()
 	# This is useful to get an ASSETS_PATH in your IDE during development
-	target_compile_definitions("${CMAKE_PROJECT_NAME}" PUBLIC RESOURCES_PATH="${CMAKE_CURRENT_SOURCE_DIR}/resources/")
+	target_compile_definitions("${CMAKE_PROJECT_NAME}" PUBLIC RESOURCES_PATH="${CMAKE_CURRENT_SOURCE_DIR}/res/")
 	target_compile_definitions("${CMAKE_PROJECT_NAME}" PUBLIC PRODUCTION_BUILD=0) 
 
 endif()
@@ -93,11 +93,11 @@ add_custom_command(
 target_link_libraries("${CMAKE_PROJECT_NAME}" PRIVATE imgui SDL2-static)
 
 
-#[[ if (CMAKE_SYSTEM_NAME STREQUAL "Windows")
+if (CMAKE_SYSTEM_NAME STREQUAL "Windows")
   target_compile_options(particle PRIVATE -Wall -O3 -ffast-math)
 elseif (CMAKE_SYSTEM_NAME STREQUAL "Linux")
   target_compile_options(particle PRIVATE -Wall -O3 -ffast-math -Wextra -pedantic)
 elseif (CMAKE_SYSTEM_NAME STREQUAL "Darwin")
   target_compile_options(particle PRIVATE -Wall -O3 -ffast-math -Wextra -pedantic)
 endif()
-]]
+
