@@ -1,7 +1,7 @@
 # Particle Life Simulation
 
 An engaging implementation of the Particle Life simulation using C++, SDL2, and Dear ImGui. Watch as particles interact and form complex patterns based on simple rules!
-This branch was supposed to be implementation of Data Oriented Design(DOD) which is good for performance. I am such a pro programmer I made it slower with this implementation 🤡
+This branch was supposed to be implementation of Data Oriented Design(DOD) which is good for performance. 
 
 ## Screenshot
 
