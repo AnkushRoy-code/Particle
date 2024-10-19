@@ -5,7 +5,8 @@
 #include <SDL.h>
 #include <SDL_timer.h>
 #include <cmath>
-
+#include <cstddef>
+#include <array>
 //---------------------------------------------------------------------------
 // Local Values
 //---------------------------------------------------------------------------
@@ -16,89 +17,111 @@
 //---------------------------------------------------------------------------
 // Implementation Of Functions
 //---------------------------------------------------------------------------
-particle::particle(float x, float y, int color) :
-    m_x(x), m_y(y), m_vx(0), m_vy(0), m_color(color)
-{
-}
 
 // this is the main logic of the particle simulation. This.... this function has
 // the most maths/Physics that I implemented in this project, I knew the logic
 // that I had to put here by other people that had made it or showcased it. But
 // imblementating what I know in cpp was not as easy as it seemed, this function
 // went through a lot of changes throughout the days.
-void particle::update(const std::vector<particle> &Particles,
-                      float Width,
-                      float Height,
-                      double deltaTime,
-                      float Force[COLOR_COUNT][COLOR_COUNT],
-                      int MinDistance[COLOR_COUNT][COLOR_COUNT],
-                      int MaxDistance[COLOR_COUNT][COLOR_COUNT],
-                      int ImGuiWindowWidth)
+void particles::update(const float &Width,
+                       const float &Height,
+                       const double &deltaTime,
+                       const std::array<std::array<float, COLOR_COUNT>, COLOR_COUNT> &Force,
+                       const std::array<std::array<int, COLOR_COUNT>, COLOR_COUNT> &MinDist,
+                       const std::array<std::array<int, COLOR_COUNT>, COLOR_COUNT> &MaxDist)
 {
-    m_ImGuiWindowWidth = ImGuiWindowWidth;
 
     float halfWidth  = 0.5f * Width;
     float halfHeight = 0.5f * Height;
 
-    for (const auto &other: Particles)
+    const float dampingFactor = 0.95f;
+
+    for (size_t i = 0; i < m_yPositions.size(); i++)
     {
-        // skip calculating force with itself.
-        if (&other == this) continue;
+        float xVelocity = m_xVelocity[i];
+        float yVelocity = m_yVelocity[i];
 
-        float dx = other.getPosX() - m_x;
-        float dy = other.getPosY() - m_y;
+        for (size_t j = 0; j < m_yPositions.size(); j++)
+        {
+            if (i == j) continue;  // Skip self-interaction
 
-        // these 4 if statements are so that the particle force wrap around. Not
-        // the particle itself. There's another function that does it later in
-        // this same function.
+            float dx = m_xPositions[j] - m_xPositions[i];
+            float dy = m_yPositions[j] - m_yPositions[i];
+
+            // Wrap around particle force calculation
             if (dx > halfWidth) { dx -= Width; }
             else if (dx < -halfWidth) { dx += Width; }
 
             if (dy > halfHeight) { dy -= Height; }
             else if (dy < -halfHeight) { dy += Height; }
 
-        // calculate distance between the 2 particles.
-        float distance =
-            std::hypot(dx, dy);  // hypot does this: (x*x + y*y)^0.5 since it
-                                 // is a inbuilt function i decided to use it.
+            // Calculate distance
+            float distance = std::hypot(dx, dy);
 
-        float force = 0.0f;
+            int colorI = m_colors[i];
+            int colorJ = m_colors[j];
 
-        // the user sets the min/max distances
-        if (distance < MinDistance[m_color][other.m_color]) { force = -1.0f; }
-        else if (distance <= MaxDistance[m_color][other.m_color])
-        {
-            force = Force[m_color][other.m_color];
+            // Determine force based on distance
+            float force = 0.0f;
+            if (distance < MinDist[colorI][colorJ]) { force = -1.0f; }
+            else if (distance <= MaxDist[colorI][colorJ]) { force = Force[colorI][colorJ]; }
+
+            if (distance > 0.0f)
+            {
+                float invDistance = 1.2f * distance;
+                float fx          = force * (dx / invDistance);
+                float fy          = force * (dy / invDistance);
+
+                xVelocity += fx;
+                yVelocity += fy;
+            }
         }
 
-        float invDistance = 1.2f * distance;
-        float fx          = force * (dx / invDistance);
-        float fy          = force * (dy / invDistance);
+        m_xPositions[i] += xVelocity * deltaTime;
+        m_yPositions[i] += yVelocity * deltaTime;
 
-        m_vx += fx;
-        m_vy += fy;
+        m_xVelocity[i] = xVelocity * dampingFactor;
+        m_yVelocity[i] = yVelocity * dampingFactor;
     }
 
-    // you gotta multiply everyting with deltaTime.
-    m_x += m_vx * deltaTime;
-    m_y += m_vy * deltaTime;
-
-    m_vx *= 0.95f;
-    m_vy *= 0.95f;
-
-    // this wrap arounds the particle position itself if it goes out of bounds.
-     wrapAround(Width, Height);
+    wrapAround(Width, Height);
 }
 
-// i wonder what they do ...
-float particle::getPosX() const { return m_x; }
-float particle::getPosY() const { return m_y; }
-
-void particle::wrapAround(float Width, float Height)
+void particles::addParticle(float x, float y, int color)
 {
-    if (m_x < 0) { m_x += Width; }
-    else if (m_x >= Width) { m_x -= Width; }
-    if (m_y < 0) { m_y += Height; }
-    else if (m_y >= Height) { m_y -= Height; }
+    m_xPositions.push_back(x);
+    m_yPositions.push_back(y);
+    m_xVelocity.push_back(0.0f);
+    m_yVelocity.push_back(0.0f);
+    m_colors.push_back(color);
 }
 
+void particles::clear()
+{
+    m_xPositions.clear();
+    m_yPositions.clear();
+    m_xVelocity.clear();
+    m_yVelocity.clear();
+    m_colors.clear();
+}
+
+size_t particles::size() { return m_xPositions.size(); }
+
+[[nodiscard]] const std::vector<float> &particles::getXPositions() const { return m_xPositions; }
+[[nodiscard]] const std::vector<float> &particles::getYPositions() const { return m_yPositions; }
+[[nodiscard]] const std::vector<int> &particles::getColors() const { return m_colors; }
+
+void particles::wrapAround(float Width, float Height)
+{
+    for (float &m_xPosition: m_xPositions)
+    {
+        if (m_xPosition < 0) { m_xPosition += Width; }
+        else if (m_xPosition >= Width) { m_xPosition -= Width; }
+    }
+
+    for (float &m_yPosition: m_yPositions)
+    {
+        if (m_yPosition < 0) { m_yPosition += Height; }
+        else if (m_yPosition >= Height) { m_yPosition -= Height; }
+    }
+}

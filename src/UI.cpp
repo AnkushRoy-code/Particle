@@ -6,11 +6,11 @@
 #include "font.h"
 
 #include <SDL.h>
-#include <ctime>
-#include <random>
-#include <imgui.h>
 #include <backends/imgui_impl_sdl2.h>
 #include <backends/imgui_impl_sdlrenderer2.h>
+#include <ctime>
+#include <imgui.h>
+#include <random>
 #include <vector>
 
 //---------------------------------------------------------------------------
@@ -33,7 +33,7 @@ static void HelpMarker(const char *desc)
 //---------------------------------------------------------------------------
 // Private Values
 //---------------------------------------------------------------------------
-const float UI::defaultForceValue[COLOR_COUNT][COLOR_COUNT] = {
+const std::array<std::array<float, COLOR_COUNT>, COLOR_COUNT> UI::m_defaultForceValue {{
     // clang-format off
   
   //RED        GREEN    BLUE     WHITE    YELLOW   PURPLE  CYAN      MAGENTA
@@ -46,8 +46,8 @@ const float UI::defaultForceValue[COLOR_COUNT][COLOR_COUNT] = {
     {0.615f,  -0.129f,  0.853f, -0.577f,  0.434f, -0.762f, 0.261f,  -0.368f},  // CYAN,
     {0.287f,  -0.571f,  0.172f,  0.686f, -0.412f,  0.745f, -0.932f,  0.073f}   // MAGENTA
     // clang-format on
-};
-const int UI::defaultMinDistanceValue[COLOR_COUNT][COLOR_COUNT] = {
+}};
+const std::array<std::array<int, COLOR_COUNT>, COLOR_COUNT> UI::m_defaultMinDistanceValue {{
 
     // clang-format off
   //RED GREEN BLUE WHITE YELLOW PURPLE CYAN MAGENTA
@@ -60,8 +60,9 @@ const int UI::defaultMinDistanceValue[COLOR_COUNT][COLOR_COUNT] = {
     {11, 28,  23,   4,    9,    21,    17,  6},   // CYAN,
     {27, 12,  29,   1,   26,     3,    15,  24}   // MAGENTA
     // clang-format on
-};
-const int UI::defaultMaxDistanceValue[COLOR_COUNT][COLOR_COUNT] = {
+}};
+
+const std::array<std::array<int, COLOR_COUNT>, COLOR_COUNT> UI::m_defaultMaxDistanceValue {{
     // clang-format off
   //RED    GREEN BLUE  WHITE YELLOW PURPLE CYAN  MAGENTA
     {150,  150,  150,  150,  217,   259,   178,  294},  // RED,
@@ -73,9 +74,9 @@ const int UI::defaultMaxDistanceValue[COLOR_COUNT][COLOR_COUNT] = {
     {294,  196,  201,  248,  176,   284,   239,  170},  // CYAN,
     {169,  265,  288,  154,  275,   217,   230,  283}   // MAGENTA
     // clang-format on
-};
+}};
 
-const SDL_Color UI::ColorMap[COLOR_COUNT] {
+const std::array<SDL_Color, COLOR_COUNT> UI::ColorMap {{
     {255, 0, 0, 255},      // RED
     {0, 255, 0, 255},      // GREEN
     {0, 0, 255, 255},      // BLUE
@@ -84,7 +85,7 @@ const SDL_Color UI::ColorMap[COLOR_COUNT] {
     {145, 30, 180, 255},   // PURPLE
     {70, 240, 240, 255},   // CYAN
     {240, 50, 230, 255}    // MAGENTA
-};
+}};
 
 //---------------------------------------------------------------------------
 // Implementation Of Functions
@@ -92,7 +93,7 @@ const SDL_Color UI::ColorMap[COLOR_COUNT] {
 
 UI::UI()
 {
-    srand(time(NULL));
+    srand(time(nullptr));
     defaultForce();
     defaultMinDistance();
     defaultMaxDistance();
@@ -105,13 +106,14 @@ void UI::initializeParticle(int ParticleCount, int NumOfParticleColor)
     std::uniform_real_distribution<> disX(0, m_width);
     std::uniform_real_distribution<> disY(0, m_height);
     m_particles.clear();
+
     for (int color = 0; color < NumOfParticleColor; color++)
     {
         for (int m = 0; m < ParticleCount; m++)
         {
-            float x = disX(gen);
-            float y = disY(gen);
-            m_particles.emplace_back(x, y, color);
+            auto x = disX(gen);
+            auto y = disY(gen);
+            m_particles.addParticle(x, y, color);
         }
     }
 }
@@ -168,7 +170,8 @@ void UI::setup()
         ImGui::SetNextWindowPos(ImVec2(0, 0), ImGuiCond_Once);
         ImGui::SetNextWindowSize(ImVec2(360, m_height),
                                  ImGuiCond_Once);  // initial size
-        ImGui::SetNextWindowSizeConstraints(ImVec2(320, m_height), ImVec2(500, m_height), 0, 0);
+        ImGui::SetNextWindowSizeConstraints(ImVec2(320, m_height), ImVec2(500, m_height), nullptr,
+                                            nullptr);
 
         ImGuiWindowFlags window_flags = 0;
 
@@ -184,7 +187,7 @@ void UI::setup()
 
 void UI::ImGuiWindowMain(ImGuiWindowFlags WinFlags)
 {
-    if (ImGui::Begin(ICON_FA_SLIDERS " Control Panel", NULL, WinFlags))
+    if (ImGui::Begin(ICON_FA_SLIDERS " Control Panel", nullptr, WinFlags))
     {
         ImGuiShowGlobalVariables();
 
@@ -192,36 +195,6 @@ void UI::ImGuiWindowMain(ImGuiWindowFlags WinFlags)
         if (m_showMinDistControl) { ImGuiShowMinDist(); }
         if (m_showMaxDistControl) { ImGuiShowMaxDist(); }
         ImGui::End();
-    }
-}
-
-// stolen from imgui_demo.cpp line 261.
-// Helper to wire demo markers located in code to an interactive browser
-typedef void (*ImGuiDemoMarkerCallback)(const char *file,
-                                        int line,
-                                        const char *section,
-                                        void *user_data);
-ImGuiDemoMarkerCallback GIiGuiDemoMarkerCallback = NULL;
-void *GIiGuiDemoMarkerCallbackUserData           = NULL;
-#define IMGUI_DEMO_MARKER(section)                                      \
-    do                                                                  \
-    {                                                                   \
-        if (GIiGuiDemoMarkerCallback != NULL)                           \
-            GIiGuiDemoMarkerCallback(__FILE__, __LINE__, section,       \
-                                     GIiGuiDemoMarkerCallbackUserData); \
-    } while (0)
-
-void UI::ImGuiShowMenuBar()
-{
-    IMGUI_DEMO_MARKER(ICON_FA_BARS " MENU");
-    if (ImGui::BeginMenuBar())
-    {
-        if (ImGui::BeginMenu(ICON_FA_BARS " Menu"))
-        {
-            if (ImGui::BeginMenu("Menu")) { ImGui::EndMenu(); }
-            ImGui::EndMenu();
-        }
-        ImGui::EndMenuBar();
     }
 }
 
@@ -237,11 +210,12 @@ void UI::ImGuiShowGlobalVariables()
 
     ImGui::SeparatorText(ICON_FA_GLOBE " Global variables");
 
-    ImGui::SliderInt(ICON_FA_CIRCLE " Radius", &m_radius, 1, 10, 0, ImGuiSliderFlags_AlwaysClamp);
+    ImGui::SliderInt(ICON_FA_CIRCLE " Radius", &m_radius, 1, 10, nullptr,
+                     ImGuiSliderFlags_AlwaysClamp);
 
     ImGui::Text(ICON_FA_CUBES " Particle Count");
     ImGui::PushID(1);
-    ImGui::SliderInt(" ", &m_particleCount, 10, 1000, 0, ImGuiSliderFlags_AlwaysClamp);
+    ImGui::SliderInt(" ", &m_particleCount, 10, 1000, nullptr, ImGuiSliderFlags_AlwaysClamp);
     {
         if (ImGui::IsItemDeactivatedAfterEdit())
         {
@@ -253,7 +227,7 @@ void UI::ImGuiShowGlobalVariables()
     HelpMarker("This changes the number of particles for each colour");
 
     ImGui::Text(ICON_FA_PALETTE " Types of Colour");
-    (ImGui::SliderInt(" ", &m_numOfParticleColor, 2, 8, 0, ImGuiSliderFlags_AlwaysClamp));
+    (ImGui::SliderInt(" ", &m_numOfParticleColor, 2, 8, nullptr, ImGuiSliderFlags_AlwaysClamp));
     {
         if (ImGui::IsItemDeactivatedAfterEdit())
         {
@@ -277,7 +251,7 @@ void UI::ImGuiShowGlobalVariables()
 
     if (m_showSameMinDist)
     {
-        if (ImGui::SliderInt(ICON_FA_RULER " Minimum dist", &m_sameMinDist, 1, 30, 0,
+        if (ImGui::SliderInt(ICON_FA_RULER " Minimum dist", &m_sameMinDist, 1, 30, nullptr,
                              ImGuiSliderFlags_AlwaysClamp))
         {
             changeAllMin(m_sameMinDist);
@@ -293,7 +267,7 @@ void UI::ImGuiShowGlobalVariables()
 
     if (m_showSameMaxDist)
     {
-        if (ImGui::SliderInt(ICON_FA_RULER " Maximum dist", &m_sameMaxDist, 150, 300, 0,
+        if (ImGui::SliderInt(ICON_FA_RULER " Maximum dist", &m_sameMaxDist, 150, 300, nullptr,
                              ImGuiSliderFlags_AlwaysClamp))
         {
             changeAllMax(m_sameMaxDist);
@@ -416,21 +390,16 @@ void UI::update(SDL_Window *Window,
     SDL_RenderSetScale(Renderer, io.DisplayFramebufferScale.x, io.DisplayFramebufferScale.y);
     SDL_SetRenderDrawColor(Renderer, 25, 25, 25, 255);
     SDL_RenderClear(Renderer);
-    updateParticle(DeltaTime / 1000);
+    updateParticle(DeltaTime / 500);
     renderParticle(Window, Renderer, Scale, OffSetX, OffSetY);
     ImGui_ImplSDLRenderer2_RenderDrawData(ImGui::GetDrawData(), Renderer);
 }
 
 void UI::updateParticle(double DeltaTime)
 {
-    for (auto &particle: m_particles)
-    {
-        particle.update(m_particles, m_width - m_ImGuiWindowWidth, m_height, DeltaTime, m_Force,
-                        m_minDist, m_maxDist, m_ImGuiWindowWidth);
-    }
+    m_particles.update(m_width - m_ImGuiWindowWidth, m_height, DeltaTime, m_Force, m_MinDist,
+                       m_MaxDist);
 }
-
-const std::vector<particle> &UI::getParticles() const { return m_particles; }
 
 std::vector<int> UI::generateIndices(int numRects)
 {
@@ -474,31 +443,31 @@ SDL_Vertex UI::calcParticlePos(
 void UI::renderParticle(
     SDL_Window *Window, SDL_Renderer *Renderer, float Scale, float OffSetX, float OffSetY)
 {
-    const auto &particles    = getParticles();
-    std::vector<int> indices = generateIndices(particles.size());
+    std::vector<int> indices = generateIndices(m_particles.size());
     std::vector<SDL_Vertex> ParticlesVertex;
 
-    for (const auto &particle: particles)
-    {
-        SDL_Vertex TopLeft = calcParticlePos(m_radius, Scale, OffSetX, OffSetY,
-                                             particle.getPosX() - static_cast<float>(m_radius) / 2,
-                                             particle.getPosY() - static_cast<float>(m_radius) / 2,
-                                             particle.getColor());
+    const std::vector<float> &xPositions = m_particles.getXPositions();
+    const std::vector<float> &yPositions = m_particles.getYPositions();
+    const std::vector<int> &colors       = m_particles.getColors();
 
-        SDL_Vertex TopRight = calcParticlePos(m_radius, Scale, OffSetX, OffSetY,
-                                              particle.getPosX() + static_cast<float>(m_radius) / 2,
-                                              particle.getPosY() - static_cast<float>(m_radius) / 2,
-                                              particle.getColor());
+    for (int i = 0; i < m_particles.size(); i++)
+    {
+
+        SDL_Vertex TopLeft = calcParticlePos(
+            m_radius, Scale, OffSetX, OffSetY, xPositions[i] - static_cast<float>(m_radius) / 2,
+            yPositions[i] - static_cast<float>(m_radius) / 2, colors[i]);
+
+        SDL_Vertex TopRight = calcParticlePos(
+            m_radius, Scale, OffSetX, OffSetY, xPositions[i] + static_cast<float>(m_radius) / 2,
+            yPositions[i] - static_cast<float>(m_radius) / 2, colors[i]);
 
         SDL_Vertex BottomRight = calcParticlePos(
-            m_radius, Scale, OffSetX, OffSetY,
-            particle.getPosX() + static_cast<float>(m_radius) / 2,
-            particle.getPosY() + static_cast<float>(m_radius) / 2, particle.getColor());
+            m_radius, Scale, OffSetX, OffSetY, xPositions[i] + static_cast<float>(m_radius) / 2,
+            yPositions[i] + static_cast<float>(m_radius) / 2, colors[i]);
 
         SDL_Vertex BottomLeft = calcParticlePos(
-            m_radius, Scale, OffSetX, OffSetY,
-            particle.getPosX() - static_cast<float>(m_radius) / 2,
-            particle.getPosY() + static_cast<float>(m_radius) / 2, particle.getColor());
+            m_radius, Scale, OffSetX, OffSetY, xPositions[i] - static_cast<float>(m_radius) / 2,
+            yPositions[i] + static_cast<float>(m_radius) / 2, colors[i]);
 
         // Add the four vertices of the rectangle to the vector
         ParticlesVertex.push_back(TopLeft);
@@ -511,7 +480,7 @@ void UI::renderParticle(
 
     SDL_RenderGeometry(Renderer, nullptr, ParticlesVertex.data(), ParticlesVertex.size(),
                        indices.data(), indices.size());
-    if (Scale != 1)
+    if (Scale != 1 || OffSetX != 0 || OffSetY != 0)
     {
         SDL_Rect rect;
 
@@ -551,7 +520,7 @@ void UI::checkBoolMinDist(int start, int end, const char *string)
 {
     if (m_numOfParticleColor >= end + 1)
     {
-        ImGui::SliderInt(string, &m_minDist[start][end], 1, 30, "%d", ImGuiSliderFlags_AlwaysClamp);
+        ImGui::SliderInt(string, &m_MinDist[start][end], 1, 30, "%d", ImGuiSliderFlags_AlwaysClamp);
     }
 }
 
@@ -559,7 +528,7 @@ void UI::checkBoolMaxDist(int start, int end, const char *string)
 {
     if (m_numOfParticleColor >= end + 1)
     {
-        ImGui::SliderInt(string, &m_maxDist[start][end], 150, 300, "%d",
+        ImGui::SliderInt(string, &m_MaxDist[start][end], 150, 300, "%d",
                          ImGuiSliderFlags_AlwaysClamp);
     }
 }
@@ -591,7 +560,7 @@ void UI::populateRandomMinDistance()
     {
         for (int j = 0; j < 8; ++j)
         {
-            m_minDist[i][j] = dis(gen);
+            m_MinDist[i][j] = dis(gen);
         }
     }
 }
@@ -607,7 +576,7 @@ void UI::populateRandomMaxDistance()
     {
         for (int j = 0; j < 8; ++j)
         {
-            m_maxDist[i][j] = dis(gen);
+            m_MaxDist[i][j] = dis(gen);
         }
     }
 }
@@ -640,7 +609,7 @@ void UI::minimiseMinDistance()
     {
         for (int j = 0; j < 8; ++j)
         {
-            m_minDist[i][j] = 1;
+            m_MinDist[i][j] = 1;
         }
     }
 }
@@ -651,7 +620,7 @@ void UI::minimiseMaxDistance()
     {
         for (int j = 0; j < 8; ++j)
         {
-            m_maxDist[i][j] = 150;
+            m_MaxDist[i][j] = 150;
         }
     }
 }
@@ -673,7 +642,7 @@ void UI::maximiseMinDistance()
     {
         for (int j = 0; j < 8; ++j)
         {
-            m_minDist[i][j] = 30;
+            m_MinDist[i][j] = 30;
         }
     }
 }
@@ -684,7 +653,7 @@ void UI::maximiseMaxDistance()
     {
         for (int j = 0; j < 8; ++j)
         {
-            m_maxDist[i][j] = 300;
+            m_MaxDist[i][j] = 300;
         }
     }
 }
@@ -695,7 +664,7 @@ void UI::defaultForce()
     {
         for (int j = 0; j < 8; ++j)
         {
-            m_Force[i][j] = defaultForceValue[i][j];
+            m_Force[i][j] = m_defaultForceValue[i][j];
         }
     }
 }
@@ -706,7 +675,7 @@ void UI::defaultMinDistance()
     {
         for (int j = 0; j < 8; ++j)
         {
-            m_minDist[i][j] = defaultMinDistanceValue[i][j];
+            m_MinDist[i][j] = m_defaultMinDistanceValue[i][j];
         }
     }
 }
@@ -717,7 +686,7 @@ void UI::defaultMaxDistance()
     {
         for (int j = 0; j < 8; ++j)
         {
-            m_maxDist[i][j] = defaultMaxDistanceValue[i][j];
+            m_MaxDist[i][j] = m_defaultMaxDistanceValue[i][j];
         }
     }
 }
@@ -728,7 +697,7 @@ void UI::setDefaultForce()
     {
         for (int j = 0; j < 8; ++j)
         {
-            m_Force[i][j] = defaultForceValue[i][j];
+            m_Force[i][j] = m_defaultForceValue[i][j];
         }
     }
 }
@@ -739,7 +708,7 @@ void UI::setDefaultMinDistance()
     {
         for (int j = 0; j < 8; ++j)
         {
-            m_minDist[i][j] = defaultMinDistanceValue[i][j];
+            m_MinDist[i][j] = m_defaultMinDistanceValue[i][j];
         }
     }
 }
@@ -750,7 +719,7 @@ void UI::setDefaultMaxDistance()
     {
         for (int j = 0; j < 8; ++j)
         {
-            m_maxDist[i][j] = defaultMaxDistanceValue[i][j];
+            m_MaxDist[i][j] = m_defaultMaxDistanceValue[i][j];
         }
     }
 }
@@ -767,7 +736,7 @@ void UI::changeAllMin(int value)
     {
         for (int j = 0; j < 8; ++j)
         {
-            m_minDist[i][j] = value;
+            m_MinDist[i][j] = value;
         }
     }
 }
@@ -777,7 +746,7 @@ void UI::changeAllMax(int value)
     {
         for (int j = 0; j < 8; ++j)
         {
-            m_maxDist[i][j] = value;
+            m_MaxDist[i][j] = value;
         }
     }
 }
@@ -831,7 +800,7 @@ void UI::createMinDistTreeNode(const char *label, int colorIndex)
         {
             if (otherColor == colorIndex)
             {
-                ImGui::SliderInt(sliderLabel.c_str(), &m_minDist[colorIndex][otherColor], 1, 30,
+                ImGui::SliderInt(sliderLabel.c_str(), &m_MinDist[colorIndex][otherColor], 1, 30,
                                  "%d", ImGuiSliderFlags_AlwaysClamp);
             }
             else
@@ -849,7 +818,7 @@ void UI::createMaxDistTreeNode(const char *label, int colorIndex)
         {
             if (otherColor == colorIndex)
             {
-                ImGui::SliderInt(sliderLabel.c_str(), &m_maxDist[colorIndex][otherColor], 150, 300,
+                ImGui::SliderInt(sliderLabel.c_str(), &m_MaxDist[colorIndex][otherColor], 150, 300,
                                  "%d", ImGuiSliderFlags_AlwaysClamp);
             }
             else

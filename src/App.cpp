@@ -59,13 +59,13 @@ bool App::initialize()
 
 void App::update(float Scale, float offSetX, float offSetY)
 {
-    m_UI.setup();
-    m_UI.update(m_window, m_renderer, deltaTime, Scale, offSetX, offSetY);
-
     int h, w;
     SDL_GetWindowSize(m_window, &w, &h);
 
     m_UI.setSize(w, h);
+
+    m_UI.setup();
+    m_UI.update(m_window, m_renderer, deltaTime, Scale, offSetX, offSetY);
 }
 
 void App::render() { SDL_RenderPresent(m_renderer); }
@@ -205,8 +205,8 @@ void App::clampScale(float &scale)
 
 void App::finalizeFrame()
 {
-    frameTime = SDL_GetTicks() - frameStart;
-    if (frameDelay > frameTime) { SDL_Delay(frameDelay - frameTime); }
+    /* frameTime = SDL_GetTicks() - frameStart;
+    if (frameDelay > frameTime) { SDL_Delay(frameDelay - frameTime); } */
 }
 
 int App::RunEngine()
@@ -246,9 +246,6 @@ int App::RunEngine()
     }
 
     finalizeFrame();
-
-    frameTime = SDL_GetTicks() - frameStart;
-    if (frameDelay > frameTime) { SDL_Delay(frameDelay - frameTime); }
 
     close();
 

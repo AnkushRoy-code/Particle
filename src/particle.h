@@ -3,52 +3,35 @@
 #include "color.h"
 
 #include <SDL.h>
+#include <cstddef>
 #include <vector>
 
-class particle
+class particles
 {
   public:
-    particle(float X, float Y, int Color);
+    void update(const float &Width,
+                const float &Height,
+                const double &deltaTime,
+                const std::array<std::array<float, COLOR_COUNT>, COLOR_COUNT> &Force,
+                const std::array<std::array<int, COLOR_COUNT>, COLOR_COUNT> &MinDist,
+                const std::array<std::array<int, COLOR_COUNT>, COLOR_COUNT> &MaxDist);
 
-    void update(const std::vector<particle> &Particles,
-                float Width,
-                float Height,
-                double deltaTime,
-                float Force[COLOR_COUNT][COLOR_COUNT],
-                int MinDist[COLOR_COUNT][COLOR_COUNT],
-                int MaxDist[COLOR_COUNT][COLOR_COUNT],
-                int ImGuiWindowWidth);
+    void addParticle(float x, float y, int color);
+    void clear();
+    size_t size();
+    [[nodiscard]] const std::vector<float> &getXPositions() const;
+    [[nodiscard]] const std::vector<float> &getYPositions() const;
+    [[nodiscard]] const std::vector<int> &getColors() const;
 
-    float getPosX() const;
-    float getPosY() const;
-    int getColor() const { return m_color; }
-    void setPos(int X, int Y)
-    {
-        m_x = X;
-        m_y = Y;
-    }
-
-  private:
-    float m_x;
-    float m_y;
-    float m_vx;
-    float m_vy;
-    int m_color;
-    int m_ImGuiWindowWidth = 360;
-
-    // Force/minDist/maxDist setup
-    // Colors -> Red(0), Green(1), Blue(2), White(3),
-    // Yellow(4), Purple(5), Cyan(6), Magenta(7)
-
-    float m_force[COLOR_COUNT][COLOR_COUNT];
-    int m_minDist[COLOR_COUNT][COLOR_COUNT];
-    int m_maxDist[COLOR_COUNT][COLOR_COUNT];
-
-  private:
     void wrapAround(float Width, float Height);
 
-    void handleMouseWheel(const SDL_Event &event);
-    void handleMouseButtonDown(const SDL_Event &event);
-    void handleMouseButtonUp(const SDL_Event &event);
-    void handleKeyDown(const SDL_Event &event);
+  private:
+    std::vector<float> m_xPositions {};
+    std::vector<float> m_yPositions {};
+    std::vector<float> m_xVelocity {};
+    std::vector<float> m_yVelocity {};
+    std::vector<int> m_colors {};
+
+  private:
+    /// Wraps particles around the viewport
 };

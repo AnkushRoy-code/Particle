@@ -28,8 +28,6 @@ class UI
 
     void updateParticle(double DeltaTime);
 
-    const std::vector<particle> &getParticles() const;
-
     void renderParticle(
         SDL_Window *Window, SDL_Renderer *Renderer, float Scale, float OffSetX, float OffSetY);
 
@@ -51,7 +49,6 @@ class UI
     void ImGuiShowMinDist();
     void showMinDistSliders();
     void showMaxDistSliders();
-    void ImGuiShowMenuBar();
     void populateRandomForce();
     void populateRandomMinDistance();
     void populateRandomMaxDistance();
@@ -73,12 +70,12 @@ class UI
     void checkBool(int start, int end, const char *string);
     void checkBoolMinDist(int start, int end, const char *string);
     void checkBoolMaxDist(int start, int end, const char *string);
-    SDL_Vertex calcParticlePos(
+    [[nodiscard]] SDL_Vertex calcParticlePos(
         int Radius, float Scale, float OffSetX, float OffSetY, float x, float y, int color) const;
 
   private:
-    int m_width;
-    int m_height;
+    int m_width {};
+    int m_height {};
     int m_radius              = 3;
     int m_particleCount       = 100;
     int m_numOfParticleColor  = 4;
@@ -90,16 +87,16 @@ class UI
     bool m_showMaxDistControl = false;
     bool m_showSameMinDist    = false;
     bool m_showSameMaxDist    = false;
-    double m_deltaTime;
-    float m_Force[COLOR_COUNT][COLOR_COUNT];
-    int m_minDist[COLOR_COUNT][COLOR_COUNT];
-    int m_maxDist[COLOR_COUNT][COLOR_COUNT];
-    std::vector<particle> m_particles;
+    double m_deltaTime {};
+    std::array<std::array<float, COLOR_COUNT>, COLOR_COUNT> m_Force {};
+    std::array<std::array<int, COLOR_COUNT>, COLOR_COUNT> m_MinDist {};
+    std::array<std::array<int, COLOR_COUNT>, COLOR_COUNT> m_MaxDist {};
+    particles m_particles;
 
     std::vector<int> generateIndices(int numRects);
-    static const SDL_Color ColorMap[COLOR_COUNT];
+    static const std::array<SDL_Color, COLOR_COUNT> ColorMap;
     // initial values
-    static const float defaultForceValue[COLOR_COUNT][COLOR_COUNT];
-    static const int defaultMinDistanceValue[COLOR_COUNT][COLOR_COUNT];
-    static const int defaultMaxDistanceValue[COLOR_COUNT][COLOR_COUNT];
+    static const std::array<std::array<float, COLOR_COUNT>, COLOR_COUNT> m_defaultForceValue;
+    static const std::array<std::array<int, COLOR_COUNT>, COLOR_COUNT> m_defaultMinDistanceValue;
+    static const std::array<std::array<int, COLOR_COUNT>, COLOR_COUNT> m_defaultMaxDistanceValue;
 };
