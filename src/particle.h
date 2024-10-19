@@ -17,8 +17,7 @@ class particle
                 float Force[COLOR_COUNT][COLOR_COUNT],
                 int MinDist[COLOR_COUNT][COLOR_COUNT],
                 int MaxDist[COLOR_COUNT][COLOR_COUNT],
-                int ImGuiWindowWidth,
-                bool Wrap);
+                int ImGuiWindowWidth);
 
     float getPosX() const;
     float getPosY() const;
@@ -47,7 +46,6 @@ class particle
 
   private:
     void wrapAround(float Width, float Height);
-    void dontWrapAround(float Width, float Height);
 
     void handleMouseWheel(const SDL_Event &event);
     void handleMouseButtonDown(const SDL_Event &event);

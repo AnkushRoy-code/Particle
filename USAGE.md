@@ -11,7 +11,6 @@ Welcome to the Particle Simulation! Here's how to get the most out of your simul
 - **💫 Particle Count:** Use the slider to control the number of particles. The magic happens when you release the slider! (Range: 10 to 1000 particles)
 - **🎨 Types Of Color:** Change the variety of particle colors. Slide, release, and watch the burst of colors! (Range: 2 to 8 colors)
 - **🔄 Refresh:** Hit this to refresh the simulation with your current settings.
-- **🔁 Wrap Particles To Viewport:** Toggle this to see if particles bounce back or loop around the edges of the screen!
 
 ### 📏 Distance Controls
 - **🔍 Show MinDist Control:** Click to expand and set the minimum distance for each particle type/color. Perfect for fine-tuning interactions!

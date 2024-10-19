@@ -267,8 +267,6 @@ void UI::ImGuiShowGlobalVariables()
     {
         initializeParticle(m_particleCount, m_numOfParticleColor);
     }
-    ImGui::SameLine();
-    ImGui::Checkbox(ICON_FA_EXPAND " Wrap Particles to viewport", &m_wrap);
 
     if (!m_showSameMinDist)
     {
@@ -428,7 +426,7 @@ void UI::updateParticle(double DeltaTime)
     for (auto &particle: m_particles)
     {
         particle.update(m_particles, m_width - m_ImGuiWindowWidth, m_height, DeltaTime, m_Force,
-                        m_minDist, m_maxDist, m_ImGuiWindowWidth, m_wrap);
+                        m_minDist, m_maxDist, m_ImGuiWindowWidth);
     }
 }
 

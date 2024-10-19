@@ -33,8 +33,7 @@ void particle::update(const std::vector<particle> &Particles,
                       float Force[COLOR_COUNT][COLOR_COUNT],
                       int MinDistance[COLOR_COUNT][COLOR_COUNT],
                       int MaxDistance[COLOR_COUNT][COLOR_COUNT],
-                      int ImGuiWindowWidth,
-                      bool Wrap)
+                      int ImGuiWindowWidth)
 {
     m_ImGuiWindowWidth = ImGuiWindowWidth;
 
@@ -52,14 +51,11 @@ void particle::update(const std::vector<particle> &Particles,
         // these 4 if statements are so that the particle force wrap around. Not
         // the particle itself. There's another function that does it later in
         // this same function.
-        if (Wrap)
-        {
             if (dx > halfWidth) { dx -= Width; }
             else if (dx < -halfWidth) { dx += Width; }
 
             if (dy > halfHeight) { dy -= Height; }
             else if (dy < -halfHeight) { dy += Height; }
-        }
 
         // calculate distance between the 2 particles.
         float distance =
@@ -91,8 +87,7 @@ void particle::update(const std::vector<particle> &Particles,
     m_vy *= 0.95f;
 
     // this wrap arounds the particle position itself if it goes out of bounds.
-    if (Wrap) { wrapAround(Width, Height); }
-    else { dontWrapAround(Width, Height); }
+     wrapAround(Width, Height);
 }
 
 // i wonder what they do ...
@@ -107,10 +102,3 @@ void particle::wrapAround(float Width, float Height)
     else if (m_y >= Height) { m_y -= Height; }
 }
 
-void particle::dontWrapAround(float Width, float Height)
-{
-    if (m_x < 0) { m_x = 0; }
-    else if (m_x > Width - 2) { m_x = Width - 2; }
-    if (m_y < 0) { m_y = 0; }
-    else if (m_y > Height - 4) { m_y = Height - 4; }
-}

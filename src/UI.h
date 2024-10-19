@@ -90,7 +90,6 @@ class UI
     bool m_showMaxDistControl = false;
     bool m_showSameMinDist    = false;
     bool m_showSameMaxDist    = false;
-    bool m_wrap               = true;
     double m_deltaTime;
     float m_Force[COLOR_COUNT][COLOR_COUNT];
     int m_minDist[COLOR_COUNT][COLOR_COUNT];
