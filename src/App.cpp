@@ -205,8 +205,8 @@ void App::clampScale(float &scale)
 
 void App::finalizeFrame()
 {
-    /* frameTime = SDL_GetTicks() - frameStart;
-    if (frameDelay > frameTime) { SDL_Delay(frameDelay - frameTime); } */
+    frameTime = SDL_GetTicks() - frameStart;
+    if (frameDelay > frameTime) { SDL_Delay(frameDelay - frameTime); }
 }
 
 int App::RunEngine()
