@@ -56,21 +56,37 @@ void particles::update(const float &Width,
             else if (dy < -halfHeight) { dy += Height; }
 
             // Calculate distance
-            float distance = std::hypot(dx, dy);
+            float distanceSquared = dx * dx + dy * dy;
+
+            if (distanceSquared == 0.0f) continue;  // Skip if particles overlap
 
             int colorI = m_colors[i];
             int colorJ = m_colors[j];
 
             // Determine force based on distance
-            float force = 0.0f;
-            if (distance < MinDist[colorI][colorJ]) { force = -1.0f; }
-            else if (distance <= MaxDist[colorI][colorJ]) { force = Force[colorI][colorJ]; }
+            float force          = 0.0f;
+            float minDistSquared = MinDist[colorI][colorJ] * MinDist[colorI][colorJ];
+            float maxDistSquared = MaxDist[colorI][colorJ] * MaxDist[colorI][colorJ];
 
-            if (distance > 0.0f)
+            if (distanceSquared < minDistSquared)
             {
-                float invDistance = 1.2f * distance;
-                float fx          = force * (dx / invDistance);
-                float fy          = force * (dy / invDistance);
+                force          = -1.0f;
+                float distance = std::sqrt(distanceSquared);
+
+                float fx = force * (dx / distance);
+                float fy = force * (dy / distance);
+
+                xVelocity += fx;
+                yVelocity += fy;
+            }
+
+            else if (distanceSquared <= maxDistSquared)
+            {
+                force          = Force[colorI][colorJ];
+                float distance = std::sqrt(distanceSquared);
+
+                float fx = force * (dx / distance);
+                float fy = force * (dy / distance);
 
                 xVelocity += fx;
                 yVelocity += fy;

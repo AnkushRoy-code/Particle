@@ -1,8 +1,7 @@
 cmake_minimum_required(VERSION 3.16)
 set(CMAKE_CXX_STANDARD 17)
 
-option(PRODUCTION_BUILD "Make this a production build" OFF)
-
+option(PRODUCTION_BUILD "Make this a production build" ON)
 
 set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Release>:Release>")
 set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
@@ -16,8 +15,6 @@ endif()
 
 project(particle)
 
-
-
 set(SDL_STATIC ON)
 
 add_subdirectory(thirdparty/SDL-release-2.30.5)		#window opener
@@ -30,36 +27,25 @@ file(GLOB_RECURSE MY_SOURCES CONFIGURE_DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/src/
 add_executable("${CMAKE_PROJECT_NAME}")
 
 set_property(TARGET "${CMAKE_PROJECT_NAME}" PROPERTY CXX_STANDARD 17)
-
-
 target_compile_definitions("${CMAKE_PROJECT_NAME}" PUBLIC GLFW_INCLUDE_NONE=1) 
 
 if(PRODUCTION_BUILD)
 	target_compile_definitions("${CMAKE_PROJECT_NAME}" PUBLIC RESOURCES_PATH="./res/") 
-
 	target_compile_definitions("${CMAKE_PROJECT_NAME}" PUBLIC PRODUCTION_BUILD=1) 
-
 else()
 	target_compile_definitions("${CMAKE_PROJECT_NAME}" PUBLIC RESOURCES_PATH="${CMAKE_CURRENT_SOURCE_DIR}/res/")
 	target_compile_definitions("${CMAKE_PROJECT_NAME}" PUBLIC PRODUCTION_BUILD=0) 
-
 endif()
 
 target_sources("${CMAKE_PROJECT_NAME}" PRIVATE ${MY_SOURCES} )
 
-
 if(MSVC)
-
 	target_compile_definitions("${CMAKE_PROJECT_NAME}" PUBLIC _CRT_SECURE_NO_WARNINGS)
-
 endif()
 
 target_include_directories("${CMAKE_PROJECT_NAME}" PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/include/")
 
-
-
 set(RESOURCES_OUTPUT_DIR "${CMAKE_BINARY_DIR}/res")
-
 
 add_custom_command(
     TARGET ${CMAKE_PROJECT_NAME}
@@ -71,4 +57,5 @@ add_custom_command(
 )
 
 target_link_libraries("${CMAKE_PROJECT_NAME}" PRIVATE imgui SDL2-static)
+target_compile_options("${CMAKE_PROJECT_NAME}" PRIVATE  -O3 -ffast-math)
 

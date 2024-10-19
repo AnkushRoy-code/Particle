@@ -9,6 +9,15 @@
 class particles
 {
   public:
+    particles()
+    {
+        m_xPositions.reserve(8000);  // 8k it the maximum amount of particles possible
+        m_yPositions.reserve(8000);
+        m_xVelocity.reserve(8000);
+        m_yVelocity.reserve(8000);
+        m_colors.reserve(8000);
+    }
+
     void update(const float &Width,
                 const float &Height,
                 const double &deltaTime,
