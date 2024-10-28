@@ -27,9 +27,9 @@ class UI
                 float OffSetY);
 
     void updateParticle(double DeltaTime);
-
     void renderParticle(
         SDL_Window *Window, SDL_Renderer *Renderer, float Scale, float OffSetX, float OffSetY);
+    void ImGuiRenderPrepare(SDL_Renderer *Renderer);
 
     void setRadius(int Radius);
     void setSize(int Width, int Height);
@@ -82,7 +82,6 @@ class UI
     int m_ImGuiWindowWidth    = 360;
     int m_sameMinDist         = 5;
     int m_sameMaxDist         = 250;
-    bool m_showDemoWindow     = false;
     bool m_showMinDistControl = false;
     bool m_showMaxDistControl = false;
     bool m_showSameMinDist    = false;

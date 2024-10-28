@@ -11,6 +11,13 @@
 //  Local Things
 //---------------------------------------------------------------------------
 
+#define PROFILE_SCOPE(name)                                              \
+    Timer timer##__LINE__(name,                                          \
+                          [&](ProfileResult profileResult)               \
+                          {                                              \
+                              m_ProfileResults.push_back(profileResult); \
+                          })
+
 // These are for deltaTime
 Uint64 currentTick = SDL_GetPerformanceFrequency();
 Uint64 lastTick    = 0;
@@ -59,21 +66,63 @@ bool App::initialize()
 
 void App::update(float Scale, float offSetX, float offSetY)
 {
+    PROFILE_SCOPE("App::update");
     int h, w;
     SDL_GetWindowSize(m_window, &w, &h);
 
     m_UI.setSize(w, h);
 
-    m_UI.setup();
-    m_UI.update(m_window, m_renderer, deltaTime, Scale, offSetX, offSetY);
+    {
+        PROFILE_SCOPE("ImGui::Update");
+        m_UI.setup();
+        printResults();
+    }
+
+    {
+        PROFILE_SCOPE("App::Render");
+        m_UI.update(m_window, m_renderer, deltaTime, Scale, offSetX, offSetY);
+    }
+
+    {
+        PROFILE_SCOPE("Particles::Update");
+        m_UI.updateParticle(deltaTime / 500);
+    }
+
+    {
+        PROFILE_SCOPE("Partilces::Render");
+        m_UI.renderParticle(m_window, m_renderer, Scale, offSetX, offSetY);
+    }
+
+    {
+        PROFILE_SCOPE("ImGui::Prepare");
+        m_UI.ImGuiRenderPrepare(m_renderer);
+    }
 }
 
-void App::render() { SDL_RenderPresent(m_renderer); }
+void App::render()
+{
+    PROFILE_SCOPE("SDL::RenderPresent");
+    SDL_RenderPresent(m_renderer);
+}
 
 void App::close()
 {
     m_UI.close();
     m_SDLStuff.close(m_window, m_renderer);
+}
+
+void App::printResults()
+{
+
+    ImGui::Begin("Performance");
+
+    for (auto &result: m_ProfileResults)
+    {
+        ImGui::Text("%s :  %.3fms", result.name, float(result.Time));
+    }
+
+    m_ProfileResults.clear();
+    ImGui::End();
 }
 
 void App::processEvents(SDL_Event &event,

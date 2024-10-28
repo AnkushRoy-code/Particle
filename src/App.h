@@ -4,8 +4,17 @@
 
 #include "SDLstuff.h"  // for making window/renderer
 #include "UI.h"  // all the ui stuff. This also includes the particle class for particle stuff.
+#include "timer.h"
 
 #include <SDL.h>
+
+struct ProfileResult
+{
+    const char *name;
+    float Time;
+};
+
+static std::vector<ProfileResult> m_ProfileResults;
 
 class App
 {
@@ -26,6 +35,7 @@ class App
 
   private:
     bool initialize();
+    void printResults();
     void update(float Scale, float offSetX, float offSetY);
     void processEvents(SDL_Event &event,
                        float &scale,

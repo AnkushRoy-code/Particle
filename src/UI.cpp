@@ -182,7 +182,6 @@ void UI::setup()
         ImGuiWindowMain(window_flags);
     }
 
-    if (m_showDemoWindow) { ImGui::ShowDemoWindow(&m_showDemoWindow); }
 }
 
 void UI::ImGuiWindowMain(ImGuiWindowFlags WinFlags)
@@ -196,6 +195,7 @@ void UI::ImGuiWindowMain(ImGuiWindowFlags WinFlags)
         if (m_showMaxDistControl) { ImGuiShowMaxDist(); }
         ImGui::End();
     }
+    // ImGui::ShowDemoWindow();
 }
 
 void UI::ImGuiShowGlobalVariables()
@@ -390,8 +390,15 @@ void UI::update(SDL_Window *Window,
     SDL_RenderSetScale(Renderer, io.DisplayFramebufferScale.x, io.DisplayFramebufferScale.y);
     SDL_SetRenderDrawColor(Renderer, 25, 25, 25, 255);
     SDL_RenderClear(Renderer);
-    updateParticle(DeltaTime / 500);
-    renderParticle(Window, Renderer, Scale, OffSetX, OffSetY);
+
+    // updateParticle(DeltaTime / 500);
+
+    // renderParticle(Window, Renderer, Scale, OffSetX, OffSetY);
+
+    // ImGui_ImplSDLRenderer2_RenderDrawData(ImGui::GetDrawData(), Renderer);
+}
+
+void UI::ImGuiRenderPrepare(SDL_Renderer *Renderer) {
     ImGui_ImplSDLRenderer2_RenderDrawData(ImGui::GetDrawData(), Renderer);
 }
 

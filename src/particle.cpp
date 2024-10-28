@@ -105,11 +105,11 @@ void particles::update(const float &Width,
 
 void particles::addParticle(float x, float y, int color)
 {
-    m_xPositions.push_back(x);
-    m_yPositions.push_back(y);
-    m_xVelocity.push_back(0.0f);
-    m_yVelocity.push_back(0.0f);
-    m_colors.push_back(color);
+    m_xPositions.emplace_back(x);
+    m_yPositions.emplace_back(y);
+    m_xVelocity.emplace_back(0.0f);
+    m_yVelocity.emplace_back(0.0f);
+    m_colors.emplace_back(color);
 }
 
 void particles::clear()
