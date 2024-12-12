@@ -93,7 +93,6 @@ const std::array<SDL_Color, COLOR_COUNT> UI::ColorMap {{
 
 UI::UI()
 {
-    srand(time(nullptr));
     defaultForce();
     defaultMinDistance();
     defaultMaxDistance();
