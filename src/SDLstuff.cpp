@@ -29,6 +29,7 @@ void SDLStuff::initialise(SDL_Window *&window, SDL_Renderer *&renderer)
     renderer = SDL_CreateRenderer(
         window, -1, SDL_RENDERER_PRESENTVSYNC | SDL_RENDERER_ACCELERATED);
 
+	SDL_GL_SetSwapInterval(0);
     if (renderer == nullptr)
     {
         std::cerr << "Renderer could not be created! SDL Error: "
