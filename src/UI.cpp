@@ -13,6 +13,9 @@
 #include <random>
 #include <vector>
 
+std::random_device m_rd;
+std::mt19937 gen {m_rd()};
+
 //---------------------------------------------------------------------------
 // Local Functions/Values
 //---------------------------------------------------------------------------
@@ -100,8 +103,6 @@ UI::UI()
 
 void UI::initializeParticle(int ParticleCount, int NumOfParticleColor)
 {
-    std::random_device rd;
-    std::mt19937 gen(rd());
     std::uniform_real_distribution<> disX(0, m_width);
     std::uniform_real_distribution<> disY(0, m_height);
     m_particles.clear();
@@ -180,7 +181,6 @@ void UI::setup()
 
         ImGuiWindowMain(window_flags);
     }
-
 }
 
 void UI::ImGuiWindowMain(ImGuiWindowFlags WinFlags)
@@ -397,7 +397,8 @@ void UI::update(SDL_Window *Window,
     // ImGui_ImplSDLRenderer2_RenderDrawData(ImGui::GetDrawData(), Renderer);
 }
 
-void UI::ImGuiRenderPrepare(SDL_Renderer *Renderer) {
+void UI::ImGuiRenderPrepare(SDL_Renderer *Renderer)
+{
     ImGui_ImplSDLRenderer2_RenderDrawData(ImGui::GetDrawData(), Renderer);
 }
 
@@ -541,9 +542,6 @@ void UI::checkBoolMaxDist(int start, int end, const char *string)
 
 void UI::populateRandomForce()
 {
-    std::random_device rd;
-    std::mt19937 gen(rd());
-
     std::uniform_real_distribution<> dis(-1.0, 1.0);
 
     for (int i = 0; i < 8; ++i)
@@ -557,9 +555,6 @@ void UI::populateRandomForce()
 
 void UI::populateRandomMinDistance()
 {
-    std::random_device rd;
-    std::mt19937 gen(rd());
-
     std::uniform_real_distribution<> dis(10, 30);
 
     for (int i = 0; i < 8; ++i)
@@ -573,9 +568,6 @@ void UI::populateRandomMinDistance()
 
 void UI::populateRandomMaxDistance()
 {
-    std::random_device rd;
-    std::mt19937 gen(rd());
-
     std::uniform_real_distribution<> dis(150, 300);
 
     for (int i = 0; i < 8; ++i)
